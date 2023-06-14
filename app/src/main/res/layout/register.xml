@@ -6,7 +6,7 @@
     android:layout_height="match_parent">
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/registerText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="100dp"
@@ -34,10 +34,10 @@
         android:paddingBottom="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
+        app:layout_constraintTop_toBottomOf="@+id/registerText" />
 
     <EditText
-        android:id="@+id/editTextText3"
+        android:id="@+id/InputName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
@@ -54,7 +54,7 @@
         app:layout_constraintTop_toBottomOf="@+id/inputEmail" />
 
     <EditText
-        android:id="@+id/editTextTextPassword"
+        android:id="@+id/inputPasswordRegister"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
@@ -67,9 +67,9 @@
         android:paddingTop="10dp"
         android:paddingRight="10dp"
         android:paddingBottom="10dp"
-        app:layout_constraintEnd_toEndOf="@+id/editTextText4"
-        app:layout_constraintStart_toStartOf="@+id/editTextText4"
-        app:layout_constraintTop_toBottomOf="@+id/editTextText4" />
+        app:layout_constraintEnd_toEndOf="@+id/inputSurname"
+        app:layout_constraintStart_toStartOf="@+id/inputSurname"
+        app:layout_constraintTop_toBottomOf="@+id/inputSurname" />
 
     <EditText
         android:id="@+id/inputEmail"
@@ -90,7 +90,7 @@
         app:layout_constraintTop_toBottomOf="@+id/inputUsernameRegister" />
 
     <EditText
-        android:id="@+id/editTextText4"
+        android:id="@+id/inputSurname"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
@@ -102,17 +102,17 @@
         android:paddingTop="10dp"
         android:paddingRight="10dp"
         android:paddingBottom="10dp"
-        app:layout_constraintEnd_toEndOf="@+id/editTextText3"
-        app:layout_constraintStart_toStartOf="@+id/editTextText3"
-        app:layout_constraintTop_toBottomOf="@+id/editTextText3" />
+        app:layout_constraintEnd_toEndOf="@+id/InputName"
+        app:layout_constraintStart_toStartOf="@+id/InputName"
+        app:layout_constraintTop_toBottomOf="@+id/InputName" />
 
     <Button
-        android:id="@+id/button2"
+        android:id="@+id/inviaRegister"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         android:text="@string/submit"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextTextPassword" />
+        app:layout_constraintTop_toBottomOf="@+id/inputPasswordRegister" />
 </androidx.constraintlayout.widget.ConstraintLayout>
