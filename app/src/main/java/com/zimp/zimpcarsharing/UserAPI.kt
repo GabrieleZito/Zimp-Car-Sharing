@@ -9,9 +9,13 @@ import retrofit2.http.POST
 import retrofit2.http.Url
 
 interface UserAPI {
-    @POST("postSelect/")
+    @POST("postSelect/") // POST per effettuare una SELECT nel database che ha come input una query stringa e restituisce un JSON
     @FormUrlEncoded
     fun login(@Field("query") query: String): Call<JsonObject>
+
+    @POST("postInsert/")
+    @FormUrlEncoded
+    fun insert(@Field("query") query: String): Call<JsonObject>
 
     @POST("postUpdate/")
     @FormUrlEncoded
@@ -21,7 +25,7 @@ interface UserAPI {
     @FormUrlEncoded
     fun remove(@Field("query") query: String): Call<JsonObject>
 
-    @GET
+    @GET // prende in input un URL e restituisce un ResponseBody
     fun getAvatar(@Url url: String): Call<JsonObject>
 
 }

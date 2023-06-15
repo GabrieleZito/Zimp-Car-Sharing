@@ -22,17 +22,26 @@ class LoginActivity : AppCompatActivity() {
             i.putExtra("msg", "CIAO")
             startActivity(i)
         }
+
+        binding.inviaLogin.setOnClickListener {
+            loginUtente(binding.inputUsername.toString(), binding.inputPassword.toString())
+        }
+
     }
 
-    private fun loginUtente(){
-        val query = "Select * from persona"
+    private fun loginUtente(username: String, password: String){
+        val query = "Select * from utente where username = $username and password = $password"
 
         ClientNetwork.retrofit.login(query).enqueue(
             object : Callback<JsonObject> {
                 override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
                     if (response.isSuccessful) {
                         if ((response.body()?.get("queryset") as JsonArray).size() == 1) {
-                            //getImageProfilo((response.body()?.get("queryset") as JsonArray).get(0) as JsonObject)
+                            Toast.makeText(
+                                this@LoginActivity,
+                                ""+(response.body()?.get("queryset") as JsonArray).get(2),
+                                Toast.LENGTH_LONG
+                            ).show()
                         } else {
                             Toast.makeText(
                                 this@LoginActivity,
@@ -45,10 +54,12 @@ class LoginActivity : AppCompatActivity() {
                 }
 
                 override fun onFailure(call: Call<JsonObject>, t: Throwable) {
-                    /*
-                     * gestisci qui il fallimento della richiesta
-                     */
 
+                    Toast.makeText(
+                        this@LoginActivity,
+                        "Impossibile connettersi al server",
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
             }
         )
