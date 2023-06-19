@@ -8,7 +8,9 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
+import com.squareup.moshi.Json
 import com.zimp.zimpcarsharing.databinding.LoginBinding
+import com.zimp.zimpcarsharing.models.Utente
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -39,27 +41,33 @@ class LoginActivity : AppCompatActivity() {
         Log.i("MESSAGGIO", "Query: $query")
         Log.i("MESSAGGIO", "Query1: $query1")
         Log.i("MESSAGGIO", "DENTRO LOGIN UTENTE")
+        var u: Utente?
         ClientNetwork.retrofit.login(query).enqueue(
             object : Callback<JsonObject> {
                 override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
 
                     Log.i("MESSAGGIO", "RESPONSE: $response")
                     if (response.isSuccessful) {
+
                         Log.i("MESSAGGIO", "RESPONSE BODY: ${response.body()}")
+
                         if ((response.body()?.get("queryset") as JsonArray).size() == 1) {
                             Toast.makeText(
                                 this@LoginActivity,
                                 "FATTTO",
                                 Toast.LENGTH_LONG
                             ).show()
+                            val p = Intent(this@LoginActivity, MainActivity::class.java)
+                            startActivity(p)
+
                         } else {
                             Toast.makeText(
                                 this@LoginActivity,
                                 "credenziali errate",
                                 Toast.LENGTH_LONG
                             ).show()
-                            //binding.progressBar.visibility = View.GONE
                         }
+
                     }
                 }
 

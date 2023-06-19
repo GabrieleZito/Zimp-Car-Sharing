@@ -1,6 +1,7 @@
 package com.zimp.zimpcarsharing
 
 import com.google.gson.JsonObject
+import com.zimp.zimpcarsharing.models.Utente
 import retrofit2.Call
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded

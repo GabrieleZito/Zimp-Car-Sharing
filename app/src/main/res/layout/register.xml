@@ -37,11 +37,12 @@
         app:layout_constraintTop_toBottomOf="@+id/registerText" />
 
     <EditText
-        android:id="@+id/InputName"
+        android:id="@+id/inputName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:background="@drawable/input_gb"
+        android:drawableLeft="@drawable/baseline_contacts_24"
         android:ems="10"
         android:hint="@string/name"
         android:inputType="text"
@@ -95,6 +96,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:background="@drawable/input_gb"
+        android:drawableLeft="@drawable/baseline_contacts_24"
         android:ems="10"
         android:hint="@string/surname"
         android:inputType="text"
@@ -102,17 +104,33 @@
         android:paddingTop="10dp"
         android:paddingRight="10dp"
         android:paddingBottom="10dp"
-        app:layout_constraintEnd_toEndOf="@+id/InputName"
-        app:layout_constraintStart_toStartOf="@+id/InputName"
-        app:layout_constraintTop_toBottomOf="@+id/InputName" />
+        app:layout_constraintEnd_toEndOf="@+id/inputName"
+        app:layout_constraintStart_toStartOf="@+id/inputName"
+        app:layout_constraintTop_toBottomOf="@+id/inputName" />
 
     <Button
         android:id="@+id/inviaRegister"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="56dp"
         android:text="@string/submit"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/inputPhone" />
+
+    <EditText
+        android:id="@+id/inputPhone"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/input_gb"
+        android:drawableLeft="@drawable/baseline_call_24"
+        android:ems="10"
+        android:hint="@string/phone"
+        android:inputType="phone"
+        android:padding="10dp"
+        app:layout_constraintEnd_toEndOf="@+id/inputPasswordRegister"
+        app:layout_constraintStart_toStartOf="@+id/inputPasswordRegister"
         app:layout_constraintTop_toBottomOf="@+id/inputPasswordRegister" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
