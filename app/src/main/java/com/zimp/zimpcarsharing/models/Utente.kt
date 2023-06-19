@@ -55,4 +55,8 @@ class Utente {
         this.success = success
         this.message = message
     }
+
+    override fun toString(): String {
+        return "Username: $username, Email: $email"
+    }
 }
