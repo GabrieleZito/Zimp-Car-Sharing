@@ -17,14 +17,14 @@ class Utente {
         set(value) {field = value}
 
     @Expose
-    @SerializedName("name")
-    private var name: String
+    @SerializedName("nome")
+    private var nome: String
         get() = field
         set(value) {field = value}
 
     @Expose
-    @SerializedName("surname")
-    private var surname: String
+    @SerializedName("cognome")
+    private var cognome: String
         get() = field
         set(value) {field = value}
 
@@ -46,6 +46,11 @@ class Utente {
         get() = field
         set(value) {field = value}
 
+    @Expose
+    @SerializedName("phone")
+    private var phone: String
+        get() = field
+        set(value) {field = value}
     constructor(
         email: String,
         username: String,
@@ -53,18 +58,22 @@ class Utente {
         surname: String,
         password: String,
         success: Boolean,
-        message: String
+        message: String,
+        phone: String
     ) {
         this.email = email
         this.username = username
-        this.name = name
-        this.surname = surname
+        this.nome = name
+        this.cognome = surname
         this.password = password
         this.success = success
         this.message = message
+        this.phone = phone
     }
 
     override fun toString(): String {
-        return "Username: $username, Email: $email"
+        return "Username: $username, Email: $email\n" +
+                "Nome: $nome, Cognome: $cognome" +
+                "PSW: $password"
     }
 }

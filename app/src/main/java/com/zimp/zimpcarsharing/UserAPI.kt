@@ -1,7 +1,9 @@
 package com.zimp.zimpcarsharing
 
+import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.zimp.zimpcarsharing.models.Utente
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
@@ -13,6 +15,10 @@ interface UserAPI {
     @POST("postSelect/") // POST per effettuare una SELECT nel database che ha come input una query stringa e restituisce un JSON
     @FormUrlEncoded
     fun login(@Field("query") query: String): Call<JsonObject>
+
+    @POST("postSelect/")
+    @FormUrlEncoded
+    fun login2(@Field("query") query: String): Call<ResponseBody>
 
     @POST("postInsert/")
     @FormUrlEncoded
