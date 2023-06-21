@@ -23,17 +23,17 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = LoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
         binding.notRegisteredBtn.setOnClickListener {
             val i = Intent(this, RegisterActivity::class.java)
             i.putExtra("msg", "CIAO")
             startActivity(i)
         }
 
-
         binding.inviaLogin.setOnClickListener {
             //Log.i("MESSAGGIO", "CLICCATO LOGIN")
-            //loginUtente(binding.inputUsername.text.toString(), binding.inputPassword.text.toString())
-            login(binding.inputUsername.text.toString(), binding.inputPassword.text.toString())
+            loginUtente(binding.inputUsername.text.toString(), binding.inputPassword.text.toString())
+            //login(binding.inputUsername.text.toString(), binding.inputPassword.text.toString())
         }
 
     }
@@ -41,27 +41,23 @@ class LoginActivity : AppCompatActivity() {
     private fun loginUtente(username: String, password: String){
         val query = "Select * from zimp_db.utente where username = '$username' and password = '$password'"
 
-        //val query1 = "Select * from zimp_db.utente"
-        Log.i("MESSAGGIO", "Query: $query")
-        //Log.i("MESSAGGIO", "Query1: $query1")
-        Log.i("MESSAGGIO", "DENTRO LOGIN UTENTE")
-        //var u: Utente?
         ClientNetwork.retrofit.login(query).enqueue(
             object : Callback<JsonObject> {
                 override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
 
                     Log.i("MESSAGGIO", "RESPONSE: $response")
                     if (response.isSuccessful) {
-
-                        Log.i("MESSAGGIO", "RESPONSE BODY: ${(response.body()?.get("queryset") as JsonArray).get(0)}")
-
+                        //Log.i("MESSAGGIO", "RESPONSE BODY: ${(response.body()?.get("queryset") as JsonArray).get(0)}")
                         if ((response.body()?.get("queryset") as JsonArray).size() == 1) {
                             Toast.makeText(
                                 this@LoginActivity,
-                                "FATTTO",
+                                "FATTO",
                                 Toast.LENGTH_LONG
                             ).show()
+                            u = gson.fromJson((response.body()?.get("queryset") as JsonArray).get(0), Utente::class.java)
+                            Log.i("UTENTE", ""+u )
                             val p = Intent(this@LoginActivity, MainActivity::class.java)
+                            p.putExtra("utente", u)
                             startActivity(p)
 
                         } else {
@@ -86,25 +82,6 @@ class LoginActivity : AppCompatActivity() {
             }
         )
 
-    }
-
-    private fun login(username: String, password: String){
-        val query = "Select * from zimp_db.utente where username = '$username' and password = '$password'"
-
-        ClientNetwork.retrofit.login2(query).enqueue(
-            object : Callback<JsonObject>{
-                override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
-
-                    Log.i("MESSAGGIONE", ""+ (response.body()?.get("queryset") as JsonArray).get(0))
-                    u = gson.fromJson((response.body()?.get("queryset") as JsonArray).get(0), Utente::class.java)
-                    Log.i("MESSAGGIONISSIMO", ""+u )
-                }
-
-                override fun onFailure(call: Call<JsonObject>, t: Throwable) {
-                    TODO("Not yet implemented")
-                }
-            }
-        )
     }
 
 }

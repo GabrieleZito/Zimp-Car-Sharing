@@ -2,8 +2,15 @@ package com.zimp.zimpcarsharing.models
 
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
+import java.io.Serializable
 
-class Utente {
+class Utente : Serializable{
+    @Expose
+    @SerializedName("idutente")
+    private var idUtente: Int
+        get() = field
+        set(value) {field = value}
+
     @Expose
     @SerializedName("email")
     private var email: String
@@ -52,6 +59,7 @@ class Utente {
         get() = field
         set(value) {field = value}
     constructor(
+        idUtente: Int,
         email: String,
         username: String,
         name: String,
@@ -61,6 +69,7 @@ class Utente {
         message: String,
         phone: String
     ) {
+        this.idUtente = idUtente
         this.email = email
         this.username = username
         this.nome = name
@@ -73,7 +82,7 @@ class Utente {
 
     override fun toString(): String {
         return "Username: $username, Email: $email\n" +
-                "Nome: $nome, Cognome: $cognome" +
-                "PSW: $password"
+                "Nome: $nome, Cognome: $cognome\n" +
+                "PSW: $password, id: $idUtente\n"
     }
 }
