@@ -16,7 +16,7 @@ object ClientNetwork {
     val retrofit by lazy{
         Retrofit.Builder()
             .baseUrl("http://10.0.2.2:8000/webmobile/")
-            .addConverterFactory(MoshiConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create())
             .client(client)
             .build()
             .create(UserAPI::class.java)}

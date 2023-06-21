@@ -5,13 +5,11 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.google.gson.JsonArray
-import com.google.gson.JsonObject
-import com.squareup.moshi.JsonAdapter
-import com.squareup.moshi.Moshi
+import com.google.gson.Gson
 import com.zimp.zimpcarsharing.databinding.LoginBinding
 import com.zimp.zimpcarsharing.models.Utente
-import okhttp3.ResponseBody
+import com.google.gson.JsonObject
+import com.google.gson.JsonArray
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -19,13 +17,10 @@ import retrofit2.Response
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var binding: LoginBinding
-
-    lateinit var jsonAdapter: JsonAdapter<Utente>
-
+    var gson : Gson = Gson()
+    lateinit var u:Utente
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        var moshi = Moshi.Builder().addLast(KotlinJsonAdapterFactory()).build()
-        jsonAdapter = moshi.adapter(Utente::class.java)
         binding = LoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
         binding.notRegisteredBtn.setOnClickListener {
@@ -33,6 +28,7 @@ class LoginActivity : AppCompatActivity() {
             i.putExtra("msg", "CIAO")
             startActivity(i)
         }
+
 
         binding.inviaLogin.setOnClickListener {
             //Log.i("MESSAGGIO", "CLICCATO LOGIN")
@@ -96,14 +92,15 @@ class LoginActivity : AppCompatActivity() {
         val query = "Select * from zimp_db.utente where username = '$username' and password = '$password'"
 
         ClientNetwork.retrofit.login2(query).enqueue(
-            object : Callback<ResponseBody>{
-                override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-                    var r: ResponseBody? = response.body()
-                    var u:Utente? = jsonAdapter.fromJson(r.toString())
-                    Log.i("MESSAGGIONE", ""+u)
+            object : Callback<JsonObject>{
+                override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
+
+                    Log.i("MESSAGGIONE", ""+ (response.body()?.get("queryset") as JsonArray).get(0))
+                    u = gson.fromJson((response.body()?.get("queryset") as JsonArray).get(0), Utente::class.java)
+                    Log.i("MESSAGGIONISSIMO", ""+u )
                 }
 
-                override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                override fun onFailure(call: Call<JsonObject>, t: Throwable) {
                     TODO("Not yet implemented")
                 }
             }
