@@ -1,5 +1,6 @@
 package com.zimp.zimpcarsharing
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.zimp.zimpcarsharing.databinding.ActivityMainBinding
@@ -21,6 +22,16 @@ class MainActivity : AppCompatActivity() {
             utente = null
             TODO("RIMANDARE AL LOGIN")
         }
-        binding.testo.text = ""+utente
+        //binding.testo.text = ""+utente
+        binding.imgAccount.setOnClickListener {
+            val i = Intent(this, AccountActivity::class.java)
+            i.putExtra("utente", utente)
+            startActivity(i)
+        }
+
+        binding.imgLogout.setOnClickListener {
+            val i = Intent(this, LoginActivity::class.java)
+            startActivity(i)
+        }
     }
 }

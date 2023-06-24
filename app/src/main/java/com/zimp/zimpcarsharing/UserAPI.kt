@@ -16,10 +16,6 @@ interface UserAPI {
     @FormUrlEncoded
     fun login(@Field("query") query: String): Call<JsonObject>
 
-    @POST("postSelect/")
-    @FormUrlEncoded
-    fun login2(@Field("query") query: String): Call<JsonObject>
-
     @POST("postInsert/")
     @FormUrlEncoded
     fun insert(@Field("query") query: String): Call<JsonObject>

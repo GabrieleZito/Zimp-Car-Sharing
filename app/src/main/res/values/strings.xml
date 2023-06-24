@@ -9,4 +9,7 @@
     <string name="notRegistered">Non hai un account?</string>
     <string name="phone">Telefono</string>
     <string name="generictext">testo</string>
+    <string name="home">Home</string>
+    <string name="editAccount">Modifica Account</string>
+    <string name="save">Salva</string>
 </resources>

@@ -7,57 +7,40 @@ import java.io.Serializable
 class Utente : Serializable{
     @Expose
     @SerializedName("idutente")
-    private var idUtente: Int
-        get() = field
-        set(value) {field = value}
+    internal var idUtente: Int
 
     @Expose
     @SerializedName("email")
-    private var email: String
-        get() = field
-        set(value) {field = value}
+    internal var email: String
 
     @Expose
     @SerializedName("username")
-    private var username: String
-        get() = field
-        set(value) {field = value}
+    internal var username: String
 
     @Expose
     @SerializedName("nome")
-    private var nome: String
-        get() = field
-        set(value) {field = value}
+    internal var nome: String
 
     @Expose
     @SerializedName("cognome")
-    private var cognome: String
-        get() = field
-        set(value) {field = value}
+    internal var cognome: String
 
     @Expose
     @SerializedName("password")
-    private var password: String
-        get() = field
-        set(value) {field = value}
-
-    @Expose
-    @SerializedName("success")
-    private var success: Boolean
-        get() = field
-        set(value) {field = value}
-
-    @Expose
-    @SerializedName("message")
-    private var message: String
-        get() = field
-        set(value) {field = value}
+    internal var password: String
 
     @Expose
     @SerializedName("phone")
-    private var phone: String
-        get() = field
-        set(value) {field = value}
+    internal var phone: String
+
+    @Expose
+    @SerializedName("success")
+    internal var success: Boolean
+
+    @Expose
+    @SerializedName("message")
+    internal var message: String
+
     constructor(
         idUtente: Int,
         email: String,

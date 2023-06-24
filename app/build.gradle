@@ -50,4 +50,6 @@ dependencies {
     implementation group: 'com.squareup.retrofit2', name: 'converter-moshi', version: '2.3.0'
     implementation 'com.squareup.okhttp3:logging-interceptor:3.12.1'
     implementation 'com.google.code.gson:gson:2.8.9'
+    implementation 'com.google.android.material:material:1.9.0'
+
 }
