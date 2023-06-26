@@ -74,7 +74,7 @@ class AccountActivity : AppCompatActivity() {
                 }
 
                 override fun onFailure(call: Call<JsonObject>, t: Throwable) {
-                    Toast.makeText(this@AccountActivity, "Problema con la connessione al server", Toast.LENGTH_LONG)
+                    Toast.makeText(this@AccountActivity, "Problema con la connessione al server", Toast.LENGTH_LONG).show()
                 }
             }
         )

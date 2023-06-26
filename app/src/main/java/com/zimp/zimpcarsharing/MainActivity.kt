@@ -23,14 +23,20 @@ class MainActivity : AppCompatActivity() {
             TODO("RIMANDARE AL LOGIN")
         }
         //binding.testo.text = ""+utente
-        binding.imgAccount.setOnClickListener {
+        binding.accountButton.setOnClickListener {
             val i = Intent(this, AccountActivity::class.java)
             i.putExtra("utente", utente)
             startActivity(i)
         }
 
-        binding.imgLogout.setOnClickListener {
+        binding.logoutBtn.setOnClickListener {
             val i = Intent(this, LoginActivity::class.java)
+            startActivity(i)
+        }
+
+        binding.prenotaBtnMain.setOnClickListener {
+            val i = Intent(this, PrenotazioneActivity::class.java)
+            i.putExtra("utente", utente)
             startActivity(i)
         }
     }

@@ -12,4 +12,7 @@
     <string name="home">Home</string>
     <string name="editAccount">Modifica Account</string>
     <string name="save">Salva</string>
+    <string name="logout">Logout</string>
+    <string name="book">Prenota</string>
+    <string name="account">Account</string>
 </resources>
