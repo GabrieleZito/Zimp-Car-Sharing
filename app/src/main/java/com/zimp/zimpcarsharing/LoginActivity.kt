@@ -47,8 +47,9 @@ class LoginActivity : AppCompatActivity() {
 
                     Log.i("MESSAGGIO", "RESPONSE: $response")
                     if (response.isSuccessful) {
-                        //Log.i("MESSAGGIO", "RESPONSE BODY: ${(response.body()?.get("queryset") as JsonArray).get(0)}")
+
                         if ((response.body()?.get("queryset") as JsonArray).size() == 1) {
+                            Log.i("MESSAGGIO", "RESPONSE BODY: ${(response.body()?.get("queryset") as JsonArray).get(0)}")
                             Toast.makeText(
                                 this@LoginActivity,
                                 "FATTO",

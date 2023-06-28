@@ -57,7 +57,7 @@ class AccountActivity : AppCompatActivity() {
 
     fun inviaModifica(){
         val query = "UPDATE zimp_db.utente SET username = '${username.text}', nome = '${name.text}', cognome = '${surname.text}', phone = '${phone.text}', password = '${pass.text}' WHERE idutente = ${utente!!.idUtente}"
-
+        // TODO: CAMBIARE IN MODIFICA(?)
         ClientNetwork.retrofit.insert(query).enqueue(
             object : Callback<JsonObject>{
                 override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
     android:layout_width="match_parent"
@@ -8,19 +9,40 @@
     android:orientation="vertical"
     tools:context=".PrenotazioneActivity">
 
-    <TextView
-        android:id="@+id/textView"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#AE81FD"
-        android:text="Prenotazione"
-        android:textAlignment="center"
-        android:textColor="#000000"
-        android:textSize="34sp" />
+        android:background="@color/main"
+        android:backgroundTint="@color/main">
 
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/fragmentPrenotazione"
-        android:name="com.zimp.zimpcarsharing.PrenotazioneFragment"
+        <TextView
+            android:id="@+id/prenotaTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/main"
+            android:text="Prenotazione"
+            android:textAlignment="center"
+            android:textColor="#000000"
+            android:textSize="34sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0" />
+
+        <ImageView
+            android:id="@+id/filterImg"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:layout_weight="10"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/baseline_filter_list_24" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerAuto"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
+
 </LinearLayout>

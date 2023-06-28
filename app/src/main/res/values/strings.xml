@@ -15,4 +15,15 @@
     <string name="logout">Logout</string>
     <string name="book">Prenota</string>
     <string name="account">Account</string>
+    <string name="filter">Filtri</string>
+    <string name="rate">Tariffa</string>
+    <string name="position">Posizione</string>
+    <string-array name="rateOpts">
+        <item>Crescente</item>
+        <item>Decrescente</item>
+    </string-array>
+    <string-array name="posOpts">
+        <item>Più vicino</item>
+        <item>Più lontano</item>
+    </string-array>
 </resources>

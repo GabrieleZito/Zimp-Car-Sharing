@@ -4,17 +4,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#989898"
-    android:backgroundTint="#989898"
-    tools:context=".MainActivity" >
+    android:background="#FFFFFF"
+    android:backgroundTint="#FFFFFF"
+    tools:context=".MainActivity">
 
     <TextView
         android:id="@+id/mainTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/main"
         android:text="Zimp Car Sharing"
         android:textAlignment="center"
+        android:textColor="#000000"
         android:textSize="34sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
