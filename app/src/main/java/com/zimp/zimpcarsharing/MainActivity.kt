@@ -18,13 +18,12 @@ import retrofit2.Response
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     var gson : Gson = Gson()
-
+    private var utente: Utente? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        var utente:Utente?
         val extras:Bundle? = intent.extras
         if (extras!= null){
             utente = extras.getSerializable("utente", Utente::class.java)
@@ -51,10 +50,15 @@ class MainActivity : AppCompatActivity() {
             fetchAuto()
         }
 
+        binding.myAutoBtn.setOnClickListener {
+            val i = Intent(this, MieAutoActivity::class.java)
+            i.putExtra("utente", utente)
+            startActivity(i)
+        }
 
     }
     fun fetchAuto(){
-        val query = "SELECT * FROM zimp_db.auto"
+        val query = "SELECT * FROM zimp_db.auto Where prenotata = 0"
 
         ClientNetwork.retrofit.select(query).enqueue(
             object: Callback<JsonObject> {
@@ -66,12 +70,13 @@ class MainActivity : AppCompatActivity() {
                         for ((i, auto) in (response.body()?.get("queryset") as JsonArray).withIndex()){
 
                             var x = gson.fromJson(auto, Auto::class.java)
-                            Log.i("Auto", "JSON: $auto")
-                            Log.i("Auto", "AUTO: $x")
+                            //Log.i("Auto", "JSON: $auto")
+                            //Log.i("Auto", "AUTO: $x")
 
                             int.putExtra("Auto $i", x)
 
                         }
+                        int.putExtra("utente", utente)
                         startActivity(int)
 
                     }else{

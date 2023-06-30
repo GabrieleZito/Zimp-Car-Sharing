@@ -13,11 +13,12 @@
     <string name="editAccount">Modifica Account</string>
     <string name="save">Salva</string>
     <string name="logout">Logout</string>
-    <string name="book">Prenota</string>
+    <string name="book">Prenota Auto</string>
     <string name="account">Account</string>
     <string name="filter">Filtri</string>
     <string name="rate">Tariffa</string>
     <string name="position">Posizione</string>
+    <string name="confirm">Conferma</string>
     <string-array name="rateOpts">
         <item>Crescente</item>
         <item>Decrescente</item>

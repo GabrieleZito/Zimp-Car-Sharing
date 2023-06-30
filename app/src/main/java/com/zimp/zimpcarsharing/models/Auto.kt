@@ -29,12 +29,19 @@ class Auto(
     internal val prenotata: Int,
     @Expose
     @SerializedName("tariffa")
-    internal val tariffa: Double
+    internal val tariffa: Double,
+    @Expose
+    @SerializedName("idproprietario")
+    internal val idproprietario: Int,
+    @Expose
+    @SerializedName("orePrenotata")
+    internal val orePrenotata: Int
 ) : Serializable {
 
     override fun toString(): String {
         return "IdAuto: $idAuto, Marca: $marca" + "Modello: $modello\n" +
                 " Lat: $latitudine" + " Long: $longitudine, idUtente: $idUtente\n" +
-                "Prenotata: $prenotata,  Tariffa: $tariffa"
+                "Prenotata: $prenotata,  Tariffa: $tariffa, idProprietario: $idproprietario\n" +
+                "Ore Prenotata: $orePrenotata"
     }
 }

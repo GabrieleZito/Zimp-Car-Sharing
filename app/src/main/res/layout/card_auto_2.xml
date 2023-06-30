@@ -59,10 +59,15 @@
                     android:layout_height="match_parent">
 
                     <TextView
-                        android:id="@+id/tariffa"
+                        android:id="@+id/prenotataText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Tariffa" />
+                        android:text="Prenotata per: " />
+
+                    <TextView
+                        android:id="@+id/orePrenotata"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
 
                 </TableRow>
 
@@ -78,23 +83,25 @@
             <LinearLayout
                 android:layout_width="100dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
+                android:layout_weight="100"
                 android:orientation="vertical">
 
-                <Button
-                    android:id="@+id/mapBtn"
+                <Space
                     android:layout_width="match_parent"
-                    android:layout_height="40dp"
-                    android:text="Apri Mappa"
-                    android:textSize="9sp" />
+                    android:layout_height="wrap_content"
+                    android:layout_weight="50" />
 
                 <Button
-                    android:id="@+id/prenotaBtn"
+                    android:id="@+id/eliminaBtn"
                     android:layout_width="match_parent"
-                    android:layout_height="40dp"
-                    android:text="Prenota"
-                    android:textSize="10sp" />
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Elimina" />
 
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="50" />
             </LinearLayout>
 
         </LinearLayout>
