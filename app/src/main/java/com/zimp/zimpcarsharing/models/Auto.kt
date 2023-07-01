@@ -23,7 +23,7 @@ class Auto(
     internal val longitudine: Double,
     @Expose
     @SerializedName("idutente")
-    internal val idUtente: Double?,
+    internal val idUtente: Int,
     @Expose
     @SerializedName("prenotata")
     internal val prenotata: Int,

@@ -25,40 +25,23 @@ class MieAutoActivity : AppCompatActivity() {
         setContentView(binding.root)
         var data = ArrayList<Auto>()
         val extras: Bundle? = intent.extras
-        if (extras!=null){
+        if (extras != null) {
+            //Log.i("DIO", "quantita: ${extras.getInt("quantita")}")
+            for (i in 0 until extras.getInt("quantita")) //Log.i("DIO", "i: $i")
+                data.add(extras.getSerializable("Auto $i", Auto::class.java)!!)
             utente = extras.getSerializable("utente", Utente::class.java)
-        }
-        fetchAutoMie(data)
+            Log.i("UTENTE", "$utente")
+        } else
+            Toast.makeText(this@MieAutoActivity, "Non ci sono auto", Toast.LENGTH_LONG).show()
+
+        //for (i in data) Log.i("AUTO", "$i")
+        data.add(Auto(4, "ciao", "ciao", 213.0, 213.0, 3, 1, 23.0, 1, 23))
         val adapter = AutoAdapter2(data, utente)
-        binding.recyclerAuto2.adapter = adapter
+        binding.recyclerAuto2.adapter  = adapter
+
     }
 
-    fun fetchAutoMie(data: ArrayList<Auto>){
-        val query = "SELECT * FROM zimp_db.auto WHERE idproprietario=${utente?.idUtente}"
-        Log.i("QUERY", query)
 
-        ClientNetwork.retrofit.select(query).enqueue(
-            object: Callback<JsonObject>{
-                override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
-                    if(response.isSuccessful){
-                        Log.i("RESPONSE", "${response.body()}")
-                        for ((i, auto) in (response.body()?.get("queryset") as JsonArray).withIndex()){
-
-                            var x = gson.fromJson(auto, Auto::class.java)
-                            Log.i("AUTO", "$x")
-                            data.add(x)
-
-
-                        }
-                    }else
-                        Toast.makeText(this@MieAutoActivity, "Ops, qualcosa è andato storto", Toast.LENGTH_LONG).show()
-                }
-                override fun onFailure(call: Call<JsonObject>, t: Throwable) {
-                    TODO("Not yet implemented")
-                }
-            }
-        )
-    }
 
     fun elimina(auto: Auto){
         Log.i("MESSAGGIO", "Cliccato elimina di ${auto.modello}")

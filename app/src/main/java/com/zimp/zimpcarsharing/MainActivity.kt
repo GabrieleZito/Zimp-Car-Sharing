@@ -51,9 +51,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.myAutoBtn.setOnClickListener {
-            val i = Intent(this, MieAutoActivity::class.java)
-            i.putExtra("utente", utente)
-            startActivity(i)
+            fetchAutoMie()
         }
 
     }
@@ -90,4 +88,37 @@ class MainActivity : AppCompatActivity() {
         )
 
     }
+
+    fun fetchAutoMie(){
+        val query = "SELECT * FROM zimp_db.auto WHERE idproprietario=${utente?.idUtente}"
+        Log.i("QUERY", query)
+
+        ClientNetwork.retrofit.select(query).enqueue(
+            object: Callback<JsonObject>{
+                override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
+                    if(response.isSuccessful){
+                        Log.i("RESPONSE", "${response.body()}")
+                        val int = Intent(this@MainActivity, MieAutoActivity::class.java)
+                        int.putExtra("quantita", (response.body()?.get("queryset") as JsonArray).size())
+                        for ((i, auto) in (response.body()?.get("queryset") as JsonArray).withIndex()){
+
+                            var x = gson.fromJson(auto, Auto::class.java)
+                            int.putExtra("Auto $i", x)
+                            Log.i("AUTO", "$x")
+
+                        }
+                        int.putExtra("utente", utente)
+                        startActivity(int)
+
+                    }else
+                        Toast.makeText(this@MainActivity, "Ops, qualcosa è andato storto", Toast.LENGTH_LONG).show()
+                }
+                override fun onFailure(call: Call<JsonObject>, t: Throwable) {
+                    Toast.makeText(this@MainActivity, "Problema di connessione con il server ", Toast.LENGTH_LONG).show()
+
+                }
+            }
+        )
+    }
+
 }
