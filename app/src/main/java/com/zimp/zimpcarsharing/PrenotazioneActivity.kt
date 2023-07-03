@@ -19,6 +19,8 @@ import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.gson.Gson
+import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.zimp.zimpcarsharing.databinding.ActivityPrenotazioneBinding
 import com.zimp.zimpcarsharing.models.Auto
@@ -30,24 +32,16 @@ import retrofit2.Response
 
 class PrenotazioneActivity : AppCompatActivity(), OnMapReadyCallback {
     lateinit var binding: ActivityPrenotazioneBinding
-    //lateinit var mapView: MapView
+    lateinit var mapView: MapView
     private val MAPVIEW_BUNDLE_KEY = "MapViewBundleKey"
     private var utente: Utente? = null
+    var gson : Gson = Gson()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPrenotazioneBinding.inflate(layoutInflater)
         setContentView(binding.root)
         binding.recyclerAuto.layoutManager = LinearLayoutManager(this)
-        binding.filterImg.setOnClickListener {
-            val dialog = Dialog(this)
-            dialog.setContentView(R.layout.filter_dialog)
-            dialog.findViewById<Button>(R.id.saveFilter).setOnClickListener {
-                val tariffa = dialog.findViewById<Spinner>(R.id.tariffaSpinner)
-                val posizione = dialog.findViewById<Spinner>(R.id.posSpinner)
-                filtra(tariffa.selectedItem.toString(), posizione.selectedItem.toString())
-            }
-            dialog.show()
-        }
+
         var data = ArrayList<Auto>()
         val extras: Bundle? = intent.extras
         if (extras != null) {
@@ -63,6 +57,17 @@ class PrenotazioneActivity : AppCompatActivity(), OnMapReadyCallback {
         val adapter = AutoAdapter(data, this, binding, utente)
 
         binding.recyclerAuto.adapter = adapter
+
+        binding.filterImg.setOnClickListener {
+            val dialog = Dialog(this)
+            dialog.setContentView(R.layout.filter_dialog)
+            dialog.findViewById<Button>(R.id.saveFilter).setOnClickListener {
+                val filtro = dialog.findViewById<Spinner>(R.id.filtroSpinner)
+                filtra(filtro.selectedItem.toString(), adapter, data)
+                dialog.hide()
+            }
+            dialog.show()
+        }
         /**
         var mapViewBundle: Bundle? = null
         if (savedInstanceState != null) {
@@ -74,14 +79,46 @@ class PrenotazioneActivity : AppCompatActivity(), OnMapReadyCallback {
         */
     }
 
-    fun filtra(tariffa: String, posizione: String) {
-        Log.i("FILTRO", "$tariffa, $posizione")
+    fun filtra(filtro: String, adapter: AutoAdapter, data: ArrayList<Auto>) {
+        var query:String = ""
+        if (filtro=="Prezzo: Crescente"){
+            query = "SELECT * FROM zimp_db.auto WHERE prenotata = 0 ORDER BY tariffa ASC"
+        }else if (filtro == "Prezzo: Decrescente"){
+            query = "SELECT * FROM zimp_db.auto WHERE prenotata = 0 ORDER BY tariffa DESC"
+        }else if (filtro == "Posizione: Più vicino"){
+            Log.i("FILTRO", "Posizione vicino")
+            query = "SELECT * FROM zimp_db.auto WHERE prenotata = 0 ORDER BY tariffa DESC"
+        }else if (filtro == "Posizione: Più lontano"){
+            Log.i("FILTRO", "Posizione lontano")
+            query = "SELECT * FROM zimp_db.auto WHERE prenotata = 0 ORDER BY tariffa ASC"
+        }
+
+        ClientNetwork.retrofit.select(query).enqueue(
+            object: Callback<JsonObject> {
+                override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
+                    if (response.isSuccessful){
+                        Log.i("RESPONSE", "${response.body()}")
+                        for ((i, auto) in (response.body()?.get("queryset") as JsonArray).withIndex()){
+                            data[i] = gson.fromJson(auto, Auto::class.java)
+                            adapter.notifyItemChanged(i)
+                        }
+                    }else{
+                        Toast.makeText(this@PrenotazioneActivity, "Ops, qualcosa è andato storto", Toast.LENGTH_LONG).show()
+                    }
+                }
+
+                override fun onFailure(call: Call<JsonObject>, t: Throwable) {
+                    TODO("Not yet implemented")
+                }
+            }
+        )
+
     }
 
     fun avviaMappa(lat: Double, long: Double, binding: ActivityPrenotazioneBinding) {
         Log.i("MAPPA", "$lat, $long")
         var mappa = binding.mapViewPrenotazione
-        mappa.visibility = View.VISIBLE
+        //mappa.visibility = View.VISIBLE
     }
 
     fun prenotaAuto(auto: Auto, context: Context, utente: Utente?) {
@@ -92,7 +129,7 @@ class PrenotazioneActivity : AppCompatActivity(), OnMapReadyCallback {
         var ore = dialog.findViewById<EditText>(R.id.inputOre)
         ore.onFocusChangeListener = OnFocusChangeListener { _, b ->
             if (!b) {
-                dialog.findViewById<TextView>(R.id.costoTotaleText).text = ""+auto.tariffa*(ore.text.toString().toDouble())
+                dialog.findViewById<TextView>(R.id.costoTotaleText).text = ""+auto.tariffa*(ore.text.toString().toInt())
             }
         }
         val prenota = dialog.findViewById<Button>(R.id.confermaPrenotBtn)
@@ -101,7 +138,7 @@ class PrenotazioneActivity : AppCompatActivity(), OnMapReadyCallback {
         }
 
         dialog.findViewById<Button>(R.id.confermaPrenotBtn).setOnClickListener {
-            val query = "UPDATE zimp_db.auto SET idutente = ${utente?.idUtente}, prenotata = 1 WHERE idauto = ${auto.idAuto}"
+            val query = "UPDATE zimp_db.auto SET idutente = ${utente?.idUtente}, prenotata = 1, orePrenotata=${ore.text.toString().toInt()} WHERE idauto = ${auto.idAuto}"
             Log.i("QUERY", query)
             Log.i("UTENTE", "$utente")
             ClientNetwork.retrofit.insert(query).enqueue(

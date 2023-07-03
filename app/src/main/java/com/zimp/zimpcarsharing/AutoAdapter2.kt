@@ -30,11 +30,11 @@ class AutoAdapter2(private var list: List<Auto>, private val utente: Utente?): R
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val ma = MieAutoActivity()
         val auto = list[position]
-        holder.img.setImageResource(R.drawable.ic_launcher_background)
+        holder.img.setImageResource(R.mipmap.car_icon)
         holder.marca.text = auto.marca
         holder.modello.text = auto.modello
         holder.testo.text = if (utente?.idUtente==auto.idproprietario) "Sei il proprietario" else "Prenotata per: "
-        holder.ore.text = if (holder.testo.text=="Sei il proprietario") "" else "${auto.orePrenotata}"
+        holder.ore.text = if (holder.testo.text=="Sei il proprietario") "" else "${auto.orePrenotata} h"
         holder.elimina.setOnClickListener {
             ma.elimina(auto)
         }

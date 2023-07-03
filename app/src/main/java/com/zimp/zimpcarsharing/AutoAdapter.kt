@@ -33,7 +33,7 @@ class AutoAdapter(private val mList:List<Auto>, private val context: Context, pr
         //val binding2 = ActivityPrenotazioneBinding.inflate(LayoutInflater.from(pa.getContext()))
         val auto = mList[position]
         holder.img.setImageResource(R.drawable.ic_launcher_background)
-        holder.marca.text = auto.marca
+        holder.marca.text = auto.marca+" "
         holder.modello.text = auto.modello
         holder.tariffa.text = "${auto.tariffa}"
         holder.prenotaBtn.setOnClickListener {

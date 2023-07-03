@@ -20,11 +20,10 @@
     <string name="position">Posizione</string>
     <string name="confirm">Conferma</string>
     <string-array name="rateOpts">
-        <item>Crescente</item>
-        <item>Decrescente</item>
+        <item>Prezzo: Crescente</item>
+        <item>Prezzo: Decrescente</item>
+        <item>Posizione: Più vicino</item>
+        <item>Posizione: Più lontano</item>
     </string-array>
-    <string-array name="posOpts">
-        <item>Più vicino</item>
-        <item>Più lontano</item>
-    </string-array>
+
 </resources>

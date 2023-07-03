@@ -1,10 +1,17 @@
 package com.zimp.zimpcarsharing
 
+import android.Manifest
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
+import android.content.pm.PackageManager
+import android.location.Location
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
@@ -15,10 +22,12 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
+
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     var gson : Gson = Gson()
     private var utente: Utente? = null
+    private lateinit var locationProviderClient: FusedLocationProviderClient
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -32,7 +41,9 @@ class MainActivity : AppCompatActivity() {
             utente = null
             startActivity(i)
         }
-        //binding.testo.text = ""+utente
+
+        locationProviderClient = LocationServices.getFusedLocationProviderClient(this)
+
         binding.accountButton.setOnClickListener {
             val i = Intent(this, AccountActivity::class.java)
             i.putExtra("utente", utente)
@@ -53,7 +64,7 @@ class MainActivity : AppCompatActivity() {
         binding.myAutoBtn.setOnClickListener {
             fetchAutoMie()
         }
-
+        //getLastKnownLocation()
     }
     fun fetchAuto(){
         val query = "SELECT * FROM zimp_db.auto Where prenotata = 0"
@@ -90,7 +101,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun fetchAutoMie(){
-        val query = "SELECT * FROM zimp_db.auto WHERE idproprietario=${utente?.idUtente}"
+        val query = "SELECT * FROM zimp_db.auto WHERE idproprietario=${utente?.idUtente} OR idutente=${utente?.idUtente}"
         Log.i("QUERY", query)
 
         ClientNetwork.retrofit.select(query).enqueue(
@@ -120,5 +131,34 @@ class MainActivity : AppCompatActivity() {
             }
         )
     }
+/**
+    fun getLastKnownLocation(){
+        Log.i("MESSAGGIO", "getLastKnownLocation chiamata")
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+            ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            ActivityCompat.requestPermissions(this@MainActivity, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION), 300)
+
+        }
+        Log.i("MESSAGGIO", "getLastKnownLocation chiamata dopo")
+        locationProviderClient.lastLocation
+            .addOnCompleteListener { task ->
+                Log.i("MESSAGGIO", "DEntro complete listener")
+                if (task.isSuccessful) {
+                    val location = task.result
+                    //val geoPoint = GeoPoint(location.latitude, location.longitude)
+
+                    //Log.d("Location", "onComplete: latitude: " + location.latitude)
+                    //Log.d("Location", "onComplete: longitude: " + location.longitude)
+                }
+            }
+    }
+    */
 
 }
