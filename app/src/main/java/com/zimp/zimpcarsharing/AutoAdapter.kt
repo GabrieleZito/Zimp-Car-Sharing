@@ -1,8 +1,10 @@
 package com.zimp.zimpcarsharing
 
 import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.zimp.zimpcarsharing.databinding.ActivityPrenotazioneBinding
 import com.zimp.zimpcarsharing.databinding.CardViewAutoBinding
@@ -32,7 +34,7 @@ class AutoAdapter(private val mList:List<Auto>, private val context: Context, pr
         val pa = PrenotazioneActivity()
         //val binding2 = ActivityPrenotazioneBinding.inflate(LayoutInflater.from(pa.getContext()))
         val auto = mList[position]
-        holder.img.setImageResource(R.drawable.ic_launcher_background)
+        holder.img.setImageResource(R.mipmap.car_icon)
         holder.marca.text = auto.marca+" "
         holder.modello.text = auto.modello
         holder.tariffa.text = "${auto.tariffa}"
@@ -40,9 +42,16 @@ class AutoAdapter(private val mList:List<Auto>, private val context: Context, pr
             pa.prenotaAuto(auto, context, utente)
         }
         holder.mapBtn.setOnClickListener {
-            pa.avviaMappa(auto.latitudine, auto.longitudine, binding)
+            avviaMappa(auto, context)
         }
 
+    }
+
+    fun avviaMappa(auto: Auto, context: Context) {
+        var i = Intent()
+        i.setClass(context, MappaActivity::class.java)
+        i.putExtra("auto", auto)
+        startActivity(context, i, null)
     }
 
 }

@@ -1,16 +1,13 @@
 package com.zimp.zimpcarsharing
 
 import android.Manifest
-import android.app.Activity
 import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationManager
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Looper
 import android.provider.MediaStore
 import android.provider.Settings
 import android.util.Log
@@ -18,18 +15,15 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
-import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
-import com.google.android.gms.tasks.Task
 import com.google.gson.Gson
-import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.zimp.zimpcarsharing.databinding.ActivityMieAutoBinding
 import com.zimp.zimpcarsharing.models.Auto
@@ -37,12 +31,6 @@ import com.zimp.zimpcarsharing.models.Utente
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import com.zimp.zimpcarsharing.utils.checkSelfPermissionCompat
-import com.zimp.zimpcarsharing.utils.requestPermissionsCompat
-import com.zimp.zimpcarsharing.utils.shouldShowRequestPermissionRationaleCompat
-import com.google.android.material.snackbar.Snackbar
-import com.zimp.zimpcarsharing.utils.showSnackbar
-import java.util.concurrent.TimeUnit
 
 
 class MieAutoActivity : AppCompatActivity() {
@@ -56,12 +44,13 @@ class MieAutoActivity : AppCompatActivity() {
     lateinit var layout:ConstraintLayout
 
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
-    private lateinit var locationRequest: LocationRequest
-    private lateinit var locationCallback: LocationCallback
-    private var currentLocation: Location? = null
+    private var dialog:Dialog? = null
+    companion object{
+        var latitude:Double? = 0.0
+        var longitude:Double? = 0.0
+    }
 
-    var latitude:Double? = 0.0
-    var longitude:Double? = 0.0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMieAutoBinding.inflate(layoutInflater)
@@ -84,35 +73,35 @@ class MieAutoActivity : AppCompatActivity() {
             Toast.makeText(this@MieAutoActivity, "Non ci sono auto", Toast.LENGTH_LONG).show()
 
         //for (i in data) Log.i("AUTO", "$i")
-        val adapter = AutoAdapter2(data, utente)
+        val adapter = AutoAdapter2(data, utente, this)
         binding.recyclerAuto2.adapter  = adapter
         binding.addAuto.setOnClickListener {
-            val dialog = Dialog(this)
-            dialog.setContentView(R.layout.add_auto_dialog)
-            val marca = dialog.findViewById<EditText>(R.id.inputMarca)
-            val modello = dialog.findViewById<EditText>(R.id.inputModello)
-            val tariffa = dialog.findViewById<EditText>(R.id.inputTariffa)
+            dialog = Dialog(this)
+            dialog!!.setContentView(R.layout.add_auto_dialog)
+            val marca = dialog!!.findViewById<EditText>(R.id.inputMarca)
+            val modello = dialog!!.findViewById<EditText>(R.id.inputModello)
+            val tariffa = dialog!!.findViewById<EditText>(R.id.inputTariffa)
 
-            dialog.findViewById<Button>(R.id.addBtn).setOnClickListener{
+            dialog!!.findViewById<Button>(R.id.addBtn).setOnClickListener{
                 if (marca.text.toString() == "" || modello.text.toString() == "" || tariffa.text.toString() == ""){
                     Toast.makeText(this@MieAutoActivity, "Inserisci tutti campi", Toast.LENGTH_LONG).show()
                 }else{
                     aggiungi(marca.text.toString(), modello.text.toString(), tariffa.text.toString().toInt())
-                    dialog.hide()
+                    dialog!!.hide()
                 }
             }
-            image = dialog.findViewById(R.id.inputImg)
+            image = dialog!!.findViewById(R.id.inputImg)
             image.setOnClickListener{
                 val i = Intent(Intent.ACTION_PICK)
                 i.data = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
                 startActivityForResult(i, GALLERY_REQ_CODE)
             }
 
-            dialog.findViewById<ImageButton>(R.id.inputPos).setOnClickListener{
+            dialog!!.findViewById<ImageButton>(R.id.inputPos).setOnClickListener{
                 getCurrentLocation()
             }
 
-            dialog.show()
+            dialog!!.show()
         }
     }
 
@@ -137,6 +126,8 @@ class MieAutoActivity : AppCompatActivity() {
                     if (location == null){
                         Toast.makeText(this@MieAutoActivity, "PROBLEMA", Toast.LENGTH_SHORT).show()
                     }else{
+                        latitude = location.latitude
+                        longitude = location.longitude
                         Log.i("POSIZIONE", "$location")
                     }
                     
@@ -190,10 +181,9 @@ class MieAutoActivity : AppCompatActivity() {
         }
     }
     fun aggiungi(marca: String, modello:String, tariffa:Int){
-        var latitudine = 0.0
-        var longitudine = 0.0
+
         val query = "INSERT INTO zimp_db.auto (marca, modello, latitudine, longitudine, prenotata, tariffa, idproprietario, orePrenotata)" +
-                                   " VALUES ('$marca', '$modello', $latitudine, $longitudine, 0, $tariffa, ${utente?.idUtente}, 0)"
+                                   " VALUES ('$marca', '$modello', $latitude, $longitude, 0, $tariffa, ${utente?.idUtente}, 0)"
         ClientNetwork.retrofit.insert(query).enqueue(
             object : Callback<JsonObject>{
                 override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
@@ -212,23 +202,55 @@ class MieAutoActivity : AppCompatActivity() {
         )
     }
 
-    fun elimina(auto: Auto){
-        val query = if (utente?.idUtente == auto.idproprietario) "DELETE FROM zimp_db.auto WHERE idauto=${auto.idAuto}" else "UPDATE zimp_db.auto SET idutente = null WHERE idauto = ${auto.idAuto}"
-        
-        ClientNetwork.retrofit.modifica(query).enqueue(
-            object : Callback<JsonObject> {
-                override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
-                    Log.i("RESPONSE", "$response")
-                    if (response.isSuccessful){
+    fun elimina(auto: Auto, context: Context, utente: Utente?){
+        val queryElimina = "DELETE FROM zimp_db.auto WHERE idauto=${auto.idAuto}"
+        val queryModifica = "UPDATE zimp_db.auto SET idutente = null, prenotata = 0 WHERE idauto = ${auto.idAuto}"
 
+        Log.i("QUERY", "$queryElimina, idUtente: ${utente?.idUtente}, idAuto: ${auto.idAuto}")
+        Log.i("QUERY", "$queryModifica")
+
+
+        if (auto.idproprietario == utente?.idUtente){
+            ClientNetwork.retrofit.remove(queryElimina).enqueue(
+                object : Callback<JsonObject> {
+                    override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
+                        Log.i("RESPONSE", "$response")
+                        if (response.isSuccessful){
+                            Toast.makeText(context, "Auto eliminata", Toast.LENGTH_SHORT).show()
+                        }else{
+                            Toast.makeText(context, "Ops, qualcosa è andato storto", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+
+                    override fun onFailure(call: Call<JsonObject>, t: Throwable) {
+                        Toast.makeText(context, "Problema di connessione al server", Toast.LENGTH_SHORT).show()
                     }
                 }
-
-                override fun onFailure(call: Call<JsonObject>, t: Throwable) {
-                    TODO("Not yet implemented")
+            )
+        }else{
+            ClientNetwork.retrofit.modifica(queryModifica).enqueue(
+                object : Callback<JsonObject> {
+                    override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
+                        Log.i("RESPONSE", "$response")
+                        if (response.isSuccessful){
+                            Toast.makeText(context, "Prenotazione cancellata", Toast.LENGTH_SHORT).show()
+                        }else{
+                            Toast.makeText(context, "Ops, qualcosa è andato storto", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                    override fun onFailure(call: Call<JsonObject>, t: Throwable) {
+                        Toast.makeText(context, "Problema di connessione al server", Toast.LENGTH_SHORT).show()
+                    }
                 }
-            }
-        )
+            )
+        }
         
+    }
+    override fun onStop() {
+        super.onStop()
+        if (dialog != null) {
+            dialog!!.dismiss()
+            dialog = null
+        }
     }
 }

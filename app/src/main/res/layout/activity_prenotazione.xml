@@ -52,17 +52,5 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
-    <com.google.android.gms.maps.MapView
-        android:id="@+id/mapViewPrenotazione"
-        android:layout_width="333dp"
-        android:layout_height="551dp"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginEnd="41dp"
-        android:layout_marginBottom="81dp"
-        android:contentDescription="Mappa dell'auto"
-        android:visibility="invisible"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-    </RelativeLayout>
+</RelativeLayout>
 

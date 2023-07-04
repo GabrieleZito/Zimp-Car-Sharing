@@ -2,10 +2,9 @@ package com.zimp.zimpcarsharing
 
 import android.app.Dialog
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.util.Log
-import android.view.View
 import android.view.View.OnFocusChangeListener
 import android.widget.Button
 import android.widget.EditText
@@ -14,11 +13,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.MapView
-import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
@@ -30,10 +24,9 @@ import retrofit2.Callback
 import retrofit2.Response
 
 
-class PrenotazioneActivity : AppCompatActivity(), OnMapReadyCallback {
-    lateinit var binding: ActivityPrenotazioneBinding
-    lateinit var mapView: MapView
-    private val MAPVIEW_BUNDLE_KEY = "MapViewBundleKey"
+class PrenotazioneActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityPrenotazioneBinding
     private var utente: Utente? = null
     var gson : Gson = Gson()
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -68,15 +61,7 @@ class PrenotazioneActivity : AppCompatActivity(), OnMapReadyCallback {
             }
             dialog.show()
         }
-        /**
-        var mapViewBundle: Bundle? = null
-        if (savedInstanceState != null) {
-            mapViewBundle = savedInstanceState.getBundle(MAPVIEW_BUNDLE_KEY)
-        }
-        mapView = binding.mapViewPrenotazione
-        mapView.onCreate(mapViewBundle)
-        mapView.getMapAsync(this)
-        */
+
     }
 
     fun filtra(filtro: String, adapter: AutoAdapter, data: ArrayList<Auto>) {
@@ -108,17 +93,11 @@ class PrenotazioneActivity : AppCompatActivity(), OnMapReadyCallback {
                 }
 
                 override fun onFailure(call: Call<JsonObject>, t: Throwable) {
-                    TODO("Not yet implemented")
+                    Toast.makeText(this@PrenotazioneActivity, "Problema di connessione al server", Toast.LENGTH_SHORT).show()
                 }
             }
         )
 
-    }
-
-    fun avviaMappa(lat: Double, long: Double, binding: ActivityPrenotazioneBinding) {
-        Log.i("MAPPA", "$lat, $long")
-        var mappa = binding.mapViewPrenotazione
-        //mappa.visibility = View.VISIBLE
     }
 
     fun prenotaAuto(auto: Auto, context: Context, utente: Utente?) {
@@ -133,11 +112,8 @@ class PrenotazioneActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         }
         val prenota = dialog.findViewById<Button>(R.id.confermaPrenotBtn)
-        prenota.setOnClickListener {
-            Toast.makeText(context, "WEEEE", Toast.LENGTH_LONG).show()
-        }
 
-        dialog.findViewById<Button>(R.id.confermaPrenotBtn).setOnClickListener {
+        prenota.setOnClickListener {
             val query = "UPDATE zimp_db.auto SET idutente = ${utente?.idUtente}, prenotata = 1, orePrenotata=${ore.text.toString().toInt()} WHERE idauto = ${auto.idAuto}"
             Log.i("QUERY", query)
             Log.i("UTENTE", "$utente")
@@ -160,21 +136,6 @@ class PrenotazioneActivity : AppCompatActivity(), OnMapReadyCallback {
 
     }
 
-    override fun onMapReady(map: GoogleMap) {
-        map.addMarker(MarkerOptions().position(LatLng(0.0, 0.0)).title("Marker"))
-
-    }
-
-    override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
-        super.onSaveInstanceState(outState, outPersistentState)
-        var mapViewBundle = outState.getBundle(MAPVIEW_BUNDLE_KEY)
-        if (mapViewBundle == null) {
-            mapViewBundle = Bundle()
-            outState.putBundle(MAPVIEW_BUNDLE_KEY, mapViewBundle)
-        }
-        //mapView.onSaveInstanceState(mapViewBundle)
-    }
-
     fun prenota(auto: Auto, utente: Utente?){
         val query = "UPDATE zimp_db.utente SET idutente = ${utente?.idUtente}, prenotata = 1 WHERE idauto = ${auto.idAuto}"
         Log.i("QUERY", query)
@@ -195,34 +156,12 @@ class PrenotazioneActivity : AppCompatActivity(), OnMapReadyCallback {
         )
     }
 
-    override fun onResume() {
-        super.onResume()
-        //mapView.onResume()
-    }
-
-    override fun onStart() {
-        super.onStart()
-        //mapView.onStart()
-    }
-
-    override fun onStop() {
-        super.onStop()
-        //mapView.onStop()
-    }
-
-    override fun onPause() {
-        //mapView.onPause()
-        super.onPause()
-    }
-
-    override fun onDestroy() {
-        //mapView.onDestroy()
-        super.onDestroy()
-    }
-
-    override fun onLowMemory() {
-        super.onLowMemory()
-        //mapView.onLowMemory()
+    fun avviaMappa(latitudine: Double, longitudine: Double, context: Context) {
+        var i = Intent()
+        i.setClass(context, MappaActivity::class.java)
+        i.putExtra("lat", latitudine)
+        i.putExtra("long", longitudine)
+        startActivity(i)
     }
 
 }
