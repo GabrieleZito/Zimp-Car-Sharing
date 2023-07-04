@@ -1,9 +1,14 @@
 package com.zimp.zimpcarsharing
 
+import android.Manifest
 import android.app.Dialog
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.location.Location
+import android.location.LocationManager
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.view.View.OnFocusChangeListener
 import android.widget.Button
@@ -12,16 +17,22 @@ import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.model.LatLng
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.zimp.zimpcarsharing.databinding.ActivityPrenotazioneBinding
 import com.zimp.zimpcarsharing.models.Auto
 import com.zimp.zimpcarsharing.models.Utente
+import com.zimp.zimpcarsharing.utils.SortLocations
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.util.Collections
 
 
 class PrenotazioneActivity : AppCompatActivity() {
@@ -29,13 +40,19 @@ class PrenotazioneActivity : AppCompatActivity() {
     private lateinit var binding: ActivityPrenotazioneBinding
     private var utente: Utente? = null
     var gson : Gson = Gson()
+    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
+    val POSITION_REQ_CODE = 100
+    private lateinit var currentLocation: LatLng
+    private lateinit var data: ArrayList<Auto>
+    private lateinit var adapter:AutoAdapter
+    private var ordine:Int = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPrenotazioneBinding.inflate(layoutInflater)
         setContentView(binding.root)
         binding.recyclerAuto.layoutManager = LinearLayoutManager(this)
-
-        var data = ArrayList<Auto>()
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
+        data = ArrayList<Auto>()
         val extras: Bundle? = intent.extras
         if (extras != null) {
             //Log.i("DIO", "quantita: ${extras.getInt("quantita")}")
@@ -47,7 +64,7 @@ class PrenotazioneActivity : AppCompatActivity() {
             Toast.makeText(this@PrenotazioneActivity, "Non ci sono auto", Toast.LENGTH_LONG).show()
 
         //for (i in data) Log.i("AUTO", "$i")
-        val adapter = AutoAdapter(data, this, binding, utente)
+        adapter = AutoAdapter(data, this, binding, utente)
 
         binding.recyclerAuto.adapter = adapter
 
@@ -64,20 +81,45 @@ class PrenotazioneActivity : AppCompatActivity() {
 
     }
 
-    fun filtra(filtro: String, adapter: AutoAdapter, data: ArrayList<Auto>) {
-        var query:String = ""
+    private fun filtra(filtro: String, adapter: AutoAdapter, data: ArrayList<Auto>) {
+        var query: String
+
         if (filtro=="Prezzo: Crescente"){
             query = "SELECT * FROM zimp_db.auto WHERE prenotata = 0 ORDER BY tariffa ASC"
+            filtraPrezzo(query, adapter, data)
         }else if (filtro == "Prezzo: Decrescente"){
             query = "SELECT * FROM zimp_db.auto WHERE prenotata = 0 ORDER BY tariffa DESC"
+            filtraPrezzo(query, adapter, data)
         }else if (filtro == "Posizione: Più vicino"){
-            Log.i("FILTRO", "Posizione vicino")
-            query = "SELECT * FROM zimp_db.auto WHERE prenotata = 0 ORDER BY tariffa DESC"
-        }else if (filtro == "Posizione: Più lontano"){
-            Log.i("FILTRO", "Posizione lontano")
-            query = "SELECT * FROM zimp_db.auto WHERE prenotata = 0 ORDER BY tariffa ASC"
+            ordine = 1
+            getLocation(data, adapter)
+        }else if (filtro =="Posizione: Più lontano"){
+            ordine = -1
+            getLocation(data, adapter)
         }
 
+
+    }
+
+    private fun ordina(adapter: AutoAdapter){
+
+        if (ordine==1){
+            Log.i("ORDINE", "Crescente")
+            Collections.sort(data, SortLocations(currentLocation))
+            for ((i, auto) in data.withIndex())
+                adapter.notifyItemChanged(i)
+        }else if (ordine == -1){
+            Log.i("ORDINE", "Decrescente")
+            Collections.sort(data, SortLocations(currentLocation))
+            data.reverse()
+            for ((i, auto) in data.withIndex())
+                adapter.notifyItemChanged(i)
+        }
+
+
+    }
+
+    private fun filtraPrezzo(query: String, adapter: AutoAdapter, data: ArrayList<Auto>){
         ClientNetwork.retrofit.select(query).enqueue(
             object: Callback<JsonObject> {
                 override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
@@ -91,13 +133,11 @@ class PrenotazioneActivity : AppCompatActivity() {
                         Toast.makeText(this@PrenotazioneActivity, "Ops, qualcosa è andato storto", Toast.LENGTH_LONG).show()
                     }
                 }
-
                 override fun onFailure(call: Call<JsonObject>, t: Throwable) {
                     Toast.makeText(this@PrenotazioneActivity, "Problema di connessione al server", Toast.LENGTH_SHORT).show()
                 }
             }
         )
-
     }
 
     fun prenotaAuto(auto: Auto, context: Context, utente: Utente?) {
@@ -136,32 +176,66 @@ class PrenotazioneActivity : AppCompatActivity() {
 
     }
 
-    fun prenota(auto: Auto, utente: Utente?){
-        val query = "UPDATE zimp_db.utente SET idutente = ${utente?.idUtente}, prenotata = 1 WHERE idauto = ${auto.idAuto}"
-        Log.i("QUERY", query)
-        Log.i("UTENTE", "$utente")
-        ClientNetwork.retrofit.modifica(query).enqueue(
-            object : Callback<JsonObject>{
-                override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
-                    Log.i("PRENOTAZIONE", "${response.body()}")
-                    if (response.isSuccessful){
-                        Toast.makeText(this@PrenotazioneActivity, "Auto prenotata", Toast.LENGTH_LONG).show()
-                    }else
-                        Toast.makeText(this@PrenotazioneActivity, "Ops qualcosa è andato storto", Toast.LENGTH_LONG).show()
+    private fun getLocation(data: ArrayList<Auto>, adapter: AutoAdapter) {
+        if (checkPermissions()){
+            if(isLocationEnabled()){
+                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                    ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    requestPermission()
+                    return
                 }
-                override fun onFailure(call: Call<JsonObject>, t: Throwable) {
-                    Toast.makeText(this@PrenotazioneActivity, "Ops qualcosa è andato storto", Toast.LENGTH_LONG).show()
+                fusedLocationProviderClient.lastLocation.addOnCompleteListener{ task->
+                    val location: Location? = task.result
+                    if (location == null){
+                        Toast.makeText(this@PrenotazioneActivity, "PROBLEMA", Toast.LENGTH_SHORT).show()
+                    }else{
+                        currentLocation = LatLng(location.latitude, location.longitude)
+                        Log.i("POSIZIONE", "$location")
+                        ordina(adapter)
+                    }
+
                 }
+            }else{
+                Toast.makeText(this@PrenotazioneActivity, "ACCENDI IL GPS", Toast.LENGTH_SHORT).show()
+                val int = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+                startActivity(int)
             }
-        )
+        }else{
+            requestPermission()
+        }
     }
 
-    fun avviaMappa(latitudine: Double, longitudine: Double, context: Context) {
-        var i = Intent()
-        i.setClass(context, MappaActivity::class.java)
-        i.putExtra("lat", latitudine)
-        i.putExtra("long", longitudine)
-        startActivity(i)
+    private fun requestPermission() {
+        ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION), POSITION_REQ_CODE)
     }
+    private fun isLocationEnabled():Boolean{
+        val locationManager: LocationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(
+            LocationManager.NETWORK_PROVIDER)
+    }
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        if (requestCode == POSITION_REQ_CODE){
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                Toast.makeText(this@PrenotazioneActivity, "Permesso concesso", Toast.LENGTH_SHORT).show()
+                getLocation(data, adapter)
+            }else{
+                Toast.makeText(this@PrenotazioneActivity, "Permesso non concesso", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+    }
+
+    private fun checkPermissions():Boolean{
+        return ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+    }
+
+
 
 }

@@ -50,7 +50,6 @@ class MieAutoActivity : AppCompatActivity() {
         var longitude:Double? = 0.0
     }
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMieAutoBinding.inflate(layoutInflater)
@@ -72,7 +71,7 @@ class MieAutoActivity : AppCompatActivity() {
         } else
             Toast.makeText(this@MieAutoActivity, "Non ci sono auto", Toast.LENGTH_LONG).show()
 
-        //for (i in data) Log.i("AUTO", "$i")
+
         val adapter = AutoAdapter2(data, utente, this)
         binding.recyclerAuto2.adapter  = adapter
         binding.addAuto.setOnClickListener {
