@@ -33,14 +33,6 @@ class Utente : Serializable{
     @SerializedName("phone")
     internal var phone: String
 
-    @Expose
-    @SerializedName("success")
-    internal var success: Boolean
-
-    @Expose
-    @SerializedName("message")
-    internal var message: String
-
     constructor(
         idUtente: Int,
         email: String,
@@ -48,8 +40,6 @@ class Utente : Serializable{
         name: String,
         surname: String,
         password: String,
-        success: Boolean,
-        message: String,
         phone: String
     ) {
         this.idUtente = idUtente
@@ -58,8 +48,6 @@ class Utente : Serializable{
         this.nome = name
         this.cognome = surname
         this.password = password
-        this.success = success
-        this.message = message
         this.phone = phone
     }
 

@@ -4,13 +4,11 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MarkerOptions
-import com.zimp.zimpcarsharing.databinding.ActivityMappaBinding
 import com.zimp.zimpcarsharing.models.Auto
 
 
@@ -24,7 +22,6 @@ class MappaActivity : AppCompatActivity(), OnMapReadyCallback {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //binding = ActivityMappaBinding.inflate(layoutInflater)
         setContentView(R.layout.activity_mappa)
 
         val extras: Bundle? = intent.extras
@@ -41,11 +38,11 @@ class MappaActivity : AppCompatActivity(), OnMapReadyCallback {
         setCameraView()
     }
 
-    fun setCameraView(){
-        val bottomBoundary:Double = auto!!.latitudine - .05
-        val leftBoundary:Double = auto!!.longitudine - .05
-        val topBoundary:Double = auto!!.latitudine + .05
-        val rightBoundary:Double = auto!!.longitudine + .05
+    private fun setCameraView(){
+        val bottomBoundary:Double = auto!!.latitudine - .005
+        val leftBoundary:Double = auto!!.longitudine - .005
+        val topBoundary:Double = auto!!.latitudine + .005
+        val rightBoundary:Double = auto!!.longitudine + .005
 
         mapBounds = LatLngBounds(
             LatLng(bottomBoundary, leftBoundary),

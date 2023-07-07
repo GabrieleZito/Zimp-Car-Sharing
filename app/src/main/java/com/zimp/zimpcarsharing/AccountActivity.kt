@@ -1,6 +1,7 @@
 package com.zimp.zimpcarsharing
 
 import android.app.AlertDialog
+import android.content.Intent
 import android.os.Bundle
 import android.widget.EditText
 import android.widget.Toast
@@ -8,8 +9,8 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.gson.JsonObject
 import com.zimp.zimpcarsharing.databinding.ActivityAccountBinding
 import com.zimp.zimpcarsharing.models.Utente
-import retrofit2.Callback
 import retrofit2.Call
+import retrofit2.Callback
 import retrofit2.Response
 
 
@@ -22,14 +23,12 @@ class AccountActivity : AppCompatActivity() {
     private lateinit var surname  : EditText
     private lateinit var phone    : EditText
     private lateinit var pass     : EditText
-    // TODO: Provare se funziona inizializzare direttamente qui le variabili invece di farlo in onStart
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAccountBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // TODO: https://stackoverflow.com/questions/73109179/constantly-check-if-a-condition-is-true-java-in-android-studio per disattivare il bottone invia
         username= binding.editUsername
         name = binding.editName
         surname = binding.editSurname
@@ -46,14 +45,15 @@ class AccountActivity : AppCompatActivity() {
             pass.setText((utente?.password))
         }else {
             utente = null
-            // TODO: return to login
+            val i = Intent(this, LoginActivity::class.java)
+            startActivity(i)
         }
 
         binding.accountSave.setOnClickListener {
             inviaModifica()
         }
-
     }
+
 
     fun inviaModifica(){
         val query = "UPDATE zimp_db.utente SET username = '${username.text}', nome = '${name.text}', cognome = '${surname.text}', phone = '${phone.text}', password = '${pass.text}' WHERE idutente = ${utente!!.idUtente}"

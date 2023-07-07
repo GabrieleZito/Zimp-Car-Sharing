@@ -41,7 +41,7 @@ class PrenotazioneActivity : AppCompatActivity() {
     private var utente: Utente? = null
     var gson : Gson = Gson()
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
-    val POSITION_REQ_CODE = 100
+    private val POSITION_REQ_CODE = 100
     private lateinit var currentLocation: LatLng
     private lateinit var data: ArrayList<Auto>
     private lateinit var adapter:AutoAdapter
@@ -184,6 +184,7 @@ class PrenotazioneActivity : AppCompatActivity() {
                         Log.i("PRENOTAZIONE", "${response}")
                         if (response.isSuccessful){
                             Toast.makeText(context, "Auto prenotata", Toast.LENGTH_LONG).show()
+                            dialog.dismiss()
                         }else
                             Toast.makeText(context, "Ops qualcosa è andato storto", Toast.LENGTH_LONG).show()
                     }

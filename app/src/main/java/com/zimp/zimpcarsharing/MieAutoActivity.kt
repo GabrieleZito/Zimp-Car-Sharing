@@ -40,14 +40,16 @@ class MieAutoActivity : AppCompatActivity() {
     var gson : Gson = Gson()
     private lateinit var data: ArrayList<Auto>
     private lateinit var adapter:AutoAdapter2
-    val GALLERY_REQ_CODE = 1000
-    val POSITION_REQ_CODE = 100
+
     private lateinit var image:ImageButton
     lateinit var layout:ConstraintLayout
+    private var dialog:Dialog? = null
 
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
-    private var dialog:Dialog? = null
+
     companion object{
+        private const val GALLERY_REQ_CODE = 1000
+        private const val POSITION_REQ_CODE = 100
         var latitude:Double? = 0.0
         var longitude:Double? = 0.0
     }
@@ -80,11 +82,14 @@ class MieAutoActivity : AppCompatActivity() {
             val tariffa = dialog!!.findViewById<EditText>(R.id.inputTariffa)
 
             dialog!!.findViewById<Button>(R.id.addBtn).setOnClickListener{
-                if (marca.text.toString() == "" || modello.text.toString() == "" || tariffa.text.toString() == ""){
-                    Toast.makeText(this@MieAutoActivity, "Inserisci tutti campi", Toast.LENGTH_LONG).show()
+                if (marca.text.toString() == "" || modello.text.toString() == "" || tariffa.text.toString() == "") {
+                    Toast.makeText(this@MieAutoActivity, "Inserisci tutti campi", Toast.LENGTH_LONG)
+                        .show()
+                }else if(latitude == 0.0 || longitude == 0.0){
+                    Toast.makeText(this@MieAutoActivity, "La posizione è obbligatoria", Toast.LENGTH_SHORT).show()
                 }else{
                     aggiungi(marca.text.toString(), modello.text.toString(), tariffa.text.toString().toInt())
-                    dialog!!.hide()
+                    dialog!!.dismiss()
                 }
             }
             image = dialog!!.findViewById(R.id.inputImg)
@@ -97,16 +102,14 @@ class MieAutoActivity : AppCompatActivity() {
             dialog!!.findViewById<ImageButton>(R.id.inputPos).setOnClickListener{
                 getCurrentLocation()
             }
-
             dialog!!.show()
         }
     }
 
 
-
     private fun getCurrentLocation(){
         if (checkPermissions()){
-            if(isLocationEnabled()){
+            if (isLocationEnabled()){
                 if (ActivityCompat.checkSelfPermission(
                         this,
                         Manifest.permission.ACCESS_FINE_LOCATION
@@ -118,41 +121,42 @@ class MieAutoActivity : AppCompatActivity() {
                     requestPermission()
                     return
                 }
-                fusedLocationProviderClient.lastLocation.addOnCompleteListener{ task->
-                    val location:Location? = task.result
+                fusedLocationProviderClient.lastLocation.addOnCompleteListener{ task ->
+                    val location: Location? = task.result
                     if (location == null){
-                        Toast.makeText(this@MieAutoActivity, "PROBLEMA", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, "Problema a torvare la posizione", Toast.LENGTH_SHORT).show()
                     }else{
+                        Toast.makeText(this, "Posizione recuperata", Toast.LENGTH_SHORT).show()
                         latitude = location.latitude
                         longitude = location.longitude
-                        Log.i("POSIZIONE", "$location")
                     }
-                    
+
                 }
             }else{
-                Toast.makeText(this@MieAutoActivity, "ACCENDI IL GPS", Toast.LENGTH_SHORT).show()
-                val int = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
-                startActivity(int)
+                //apri impostazioni
+                Toast.makeText(this, "Accendi il GPS", Toast.LENGTH_SHORT).show()
+                val i = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+                startActivity(i)
             }
         }else{
+            //richiedi permesso
             requestPermission()
         }
     }
 
-    private fun requestPermission() {
+    private fun checkPermissions():Boolean{
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+            return true
+        return false
+    }
+
+    private fun requestPermission(){
         ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION), POSITION_REQ_CODE)
     }
-    private fun isLocationEnabled():Boolean{
-        val locationManager:LocationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
-    }
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == POSITION_REQ_CODE){
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED){
                 Toast.makeText(this@MieAutoActivity, "Permesso concesso", Toast.LENGTH_SHORT).show()
@@ -161,14 +165,12 @@ class MieAutoActivity : AppCompatActivity() {
                 Toast.makeText(this@MieAutoActivity, "Permesso non concesso", Toast.LENGTH_SHORT).show()
             }
         }
-
     }
 
-    private fun checkPermissions():Boolean{
-        return ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+    private fun isLocationEnabled():Boolean{
+        val locationManager:LocationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled((LocationManager.NETWORK_PROVIDER))
     }
-
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -177,10 +179,15 @@ class MieAutoActivity : AppCompatActivity() {
             //EVENTUALE CODICE per inviare l'immagine al server
         }
     }
+
+
+
+
     fun aggiungi(marca: String, modello:String, tariffa:Int){
 
         val query = "INSERT INTO zimp_db.auto (marca, modello, latitudine, longitudine, prenotata, tariffa, idproprietario, orePrenotata)" +
                                    " VALUES ('$marca', '$modello', $latitude, $longitude, 0, $tariffa, ${utente?.idUtente}, 0)"
+        Log.i("QUERY", "$query")
         ClientNetwork.retrofit.insert(query).enqueue(
             object : Callback<JsonObject>{
                 override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
@@ -191,7 +198,6 @@ class MieAutoActivity : AppCompatActivity() {
                         Toast.makeText(this@MieAutoActivity, "Ops, qualcosa è andato storto", Toast.LENGTH_SHORT).show()
                     }
                 }
-
                 override fun onFailure(call: Call<JsonObject>, t: Throwable) {
                     Toast.makeText(this@MieAutoActivity, "Problema con il server", Toast.LENGTH_LONG).show()
                 }
@@ -243,15 +249,10 @@ class MieAutoActivity : AppCompatActivity() {
         }
         
     }
-    override fun onStop() {
-        super.onStop()
-        if (dialog != null) {
-            dialog!!.dismiss()
-            dialog = null
-        }
-    }
 
-    fun fetchAutoMie(){
+
+    private fun fetchAutoMie(){
+        //RECUPERA LE AUTO condivise dall'utente e quelle prenotate
         val query = "SELECT * FROM zimp_db.auto WHERE idproprietario=${utente?.idUtente} OR idutente=${utente?.idUtente}"
         Log.i("QUERY", query)
 
@@ -277,6 +278,14 @@ class MieAutoActivity : AppCompatActivity() {
                 }
             }
         )
+    }
+
+    override fun onStop() {
+        super.onStop()
+        if (dialog != null) {
+            dialog!!.dismiss()
+            dialog = null
+        }
     }
 
 }
