@@ -58,14 +58,21 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.prenotaBtnMain.setOnClickListener {
-            fetchAuto()
+            val i = Intent(this, PrenotazioneActivity::class.java)
+            i.putExtra("utente", utente)
+            startActivity(i)
+            //fetchAuto()
         }
 
         binding.myAutoBtn.setOnClickListener {
-            fetchAutoMie()
+            val i = Intent(this, MieAutoActivity::class.java)
+            i.putExtra("utente", utente)
+            startActivity(i)
+            //fetchAutoMie()
         }
         //getLastKnownLocation()
     }
+    /**
     fun fetchAuto(){
         val query = "SELECT * FROM zimp_db.auto Where prenotata = 0"
 
@@ -100,6 +107,8 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+
+
     fun fetchAutoMie(){
         val query = "SELECT * FROM zimp_db.auto WHERE idproprietario=${utente?.idUtente} OR idutente=${utente?.idUtente}"
         Log.i("QUERY", query)
@@ -131,6 +140,8 @@ class MainActivity : AppCompatActivity() {
             }
         )
     }
+
+*/
 /**
     fun getLastKnownLocation(){
         Log.i("MESSAGGIO", "getLastKnownLocation chiamata")

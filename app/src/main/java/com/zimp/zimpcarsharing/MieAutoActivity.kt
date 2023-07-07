@@ -24,6 +24,7 @@ import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
 import com.google.gson.Gson
+import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.zimp.zimpcarsharing.databinding.ActivityMieAutoBinding
 import com.zimp.zimpcarsharing.models.Auto
@@ -37,7 +38,8 @@ class MieAutoActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMieAutoBinding
     private var utente: Utente? = null
     var gson : Gson = Gson()
-    var data = ArrayList<Auto>()
+    private lateinit var data: ArrayList<Auto>
+    private lateinit var adapter:AutoAdapter2
     val GALLERY_REQ_CODE = 1000
     val POSITION_REQ_CODE = 100
     private lateinit var image:ImageButton
@@ -56,23 +58,19 @@ class MieAutoActivity : AppCompatActivity() {
         binding.recyclerAuto2.layoutManager = LinearLayoutManager(this)
         setContentView(binding.root)
         layout = binding.root
-
+        data = ArrayList()
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
 
         val extras: Bundle? = intent.extras
         if (extras != null) {
-            for (i in 0 until extras.getInt("quantita")){
-                data.add(extras.getSerializable("Auto $i", Auto::class.java)!!)
-                Log.i("AUTO", "${data[i]}")
-            }
-
             utente = extras.getSerializable("utente", Utente::class.java)
             Log.i("UTENTE", "$utente")
         } else
             Toast.makeText(this@MieAutoActivity, "Non ci sono auto", Toast.LENGTH_LONG).show()
 
 
-        val adapter = AutoAdapter2(data, utente, this)
+        adapter = AutoAdapter2(data, utente, this)
+        fetchAutoMie()
         binding.recyclerAuto2.adapter  = adapter
         binding.addAuto.setOnClickListener {
             dialog = Dialog(this)
@@ -252,4 +250,33 @@ class MieAutoActivity : AppCompatActivity() {
             dialog = null
         }
     }
+
+    fun fetchAutoMie(){
+        val query = "SELECT * FROM zimp_db.auto WHERE idproprietario=${utente?.idUtente} OR idutente=${utente?.idUtente}"
+        Log.i("QUERY", query)
+
+        ClientNetwork.retrofit.select(query).enqueue(
+            object: Callback<JsonObject>{
+                override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
+                    if(response.isSuccessful){
+                        Log.i("RESPONSE", "${response.body()}")
+                        for ((i, auto) in (response.body()?.get("queryset") as JsonArray).withIndex()){
+
+                            var x = gson.fromJson(auto, Auto::class.java)
+                            data.add(x)
+                            adapter.notifyItemInserted(i)
+                            //Log.i("AUTO", "$x")
+
+                        }
+                    }else
+                        Toast.makeText(this@MieAutoActivity, "Ops, qualcosa è andato storto", Toast.LENGTH_LONG).show()
+                }
+                override fun onFailure(call: Call<JsonObject>, t: Throwable) {
+                    Toast.makeText(this@MieAutoActivity, "Problema di connessione con il server ", Toast.LENGTH_LONG).show()
+
+                }
+            }
+        )
+    }
+
 }

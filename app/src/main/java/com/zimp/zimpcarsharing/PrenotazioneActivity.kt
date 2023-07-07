@@ -46,41 +46,62 @@ class PrenotazioneActivity : AppCompatActivity() {
     private lateinit var data: ArrayList<Auto>
     private lateinit var adapter:AutoAdapter
     private var ordine:Int = 0
+    private var dialog: Dialog? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPrenotazioneBinding.inflate(layoutInflater)
         setContentView(binding.root)
         binding.recyclerAuto.layoutManager = LinearLayoutManager(this)
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
-        data = ArrayList<Auto>()
+        data = ArrayList()
         val extras: Bundle? = intent.extras
-        if (extras != null) {
-            //Log.i("DIO", "quantita: ${extras.getInt("quantita")}")
-            for (i in 0 until extras.getInt("quantita")) //Log.i("DIO", "i: $i")
-                data.add(extras.getSerializable("Auto $i", Auto::class.java)!!)
+
+        if (extras != null){
             utente = extras.getSerializable("utente", Utente::class.java)
-            Log.i("UTENTE dentro prenotazioneActivity", "$utente")
-        } else
-            Toast.makeText(this@PrenotazioneActivity, "Non ci sono auto", Toast.LENGTH_LONG).show()
+            Log.i("UTENTE", "$utente")
+        }
 
-        //for (i in data) Log.i("AUTO", "$i")
         adapter = AutoAdapter(data, this, binding, utente)
-
+        fetchAuto()
         binding.recyclerAuto.adapter = adapter
 
         binding.filterImg.setOnClickListener {
-            val dialog = Dialog(this)
-            dialog.setContentView(R.layout.filter_dialog)
-            dialog.findViewById<Button>(R.id.saveFilter).setOnClickListener {
-                val filtro = dialog.findViewById<Spinner>(R.id.filtroSpinner)
+            dialog = Dialog(this)
+            dialog!!.setContentView(R.layout.filter_dialog)
+            dialog!!.findViewById<Button>(R.id.saveFilter).setOnClickListener {
+                val filtro = dialog!!.findViewById<Spinner>(R.id.filtroSpinner)
                 filtra(filtro.selectedItem.toString(), adapter, data)
-                dialog.hide()
+                dialog!!.hide()
             }
-            dialog.show()
+            dialog!!.show()
         }
-
     }
 
+    //Query per recuperare le auto da poter prenotare
+    fun fetchAuto(){
+        val query = "SELECT * FROM zimp_db.auto Where prenotata = 0"
+
+        ClientNetwork.retrofit.select(query).enqueue(
+            object: Callback<JsonObject> {
+                override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
+                    Log.i("MESSAGGIO","${response.body()}")
+                    if (response.isSuccessful){
+                        for ((i, auto) in (response.body()?.get("queryset") as JsonArray).withIndex()){
+                            var x = gson.fromJson(auto, Auto::class.java)
+                            data.add(x)
+                            adapter.notifyItemInserted(i)
+                        }
+                    }else{
+                        Toast.makeText(this@PrenotazioneActivity, "Non ci sono auto da noleggiare", Toast.LENGTH_LONG).show()
+                    }
+                }
+                override fun onFailure(call: Call<JsonObject>, t: Throwable) {
+                    Toast.makeText(this@PrenotazioneActivity, "Problema di connessione con il server ", Toast.LENGTH_LONG).show()
+                }
+            }
+        )
+
+    }
     private fun filtra(filtro: String, adapter: AutoAdapter, data: ArrayList<Auto>) {
         var query: String
 
@@ -92,10 +113,10 @@ class PrenotazioneActivity : AppCompatActivity() {
             filtraPrezzo(query, adapter, data)
         }else if (filtro == "Posizione: Più vicino"){
             ordine = 1
-            getLocation(data, adapter)
+            getLocation(adapter)
         }else if (filtro =="Posizione: Più lontano"){
             ordine = -1
-            getLocation(data, adapter)
+            getLocation(adapter)
         }
 
 
@@ -173,10 +194,9 @@ class PrenotazioneActivity : AppCompatActivity() {
             )
         }
         dialog.show()
-
     }
 
-    private fun getLocation(data: ArrayList<Auto>, adapter: AutoAdapter) {
+    private fun getLocation(adapter: AutoAdapter) {
         if (checkPermissions()){
             if(isLocationEnabled()){
                 if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
@@ -187,7 +207,7 @@ class PrenotazioneActivity : AppCompatActivity() {
                 fusedLocationProviderClient.lastLocation.addOnCompleteListener{ task->
                     val location: Location? = task.result
                     if (location == null){
-                        Toast.makeText(this@PrenotazioneActivity, "PROBLEMA", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@PrenotazioneActivity, "PROBLEMA a trovare la tua posizione", Toast.LENGTH_SHORT).show()
                     }else{
                         currentLocation = LatLng(location.latitude, location.longitude)
                         Log.i("POSIZIONE", "$location")
@@ -223,7 +243,7 @@ class PrenotazioneActivity : AppCompatActivity() {
         if (requestCode == POSITION_REQ_CODE){
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED){
                 Toast.makeText(this@PrenotazioneActivity, "Permesso concesso", Toast.LENGTH_SHORT).show()
-                getLocation(data, adapter)
+                getLocation(adapter)
             }else{
                 Toast.makeText(this@PrenotazioneActivity, "Permesso non concesso", Toast.LENGTH_SHORT).show()
             }
@@ -237,5 +257,11 @@ class PrenotazioneActivity : AppCompatActivity() {
     }
 
 
-
+    override fun onStop() {
+        super.onStop()
+        if (dialog != null) {
+            dialog?.dismiss()
+            dialog = null
+        }
+    }
 }
