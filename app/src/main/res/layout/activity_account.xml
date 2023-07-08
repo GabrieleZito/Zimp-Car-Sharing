@@ -20,12 +20,12 @@
     <EditText
         android:id="@+id/editUsername"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="48dp"
         android:layout_marginStart="32dp"
         android:layout_marginTop="100dp"
         android:layout_marginEnd="32dp"
         android:background="@drawable/input_gb"
-        android:drawableLeft="@drawable/username_icon"
+        android:drawableStart="@drawable/username_icon"
         android:ems="10"
         android:hint="@string/username"
         android:inputType="text"
@@ -36,15 +36,16 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editAccountText" />
+        app:layout_constraintTop_toBottomOf="@+id/editAccountText"
+        android:autofillHints="newUsername" />
 
     <EditText
         android:id="@+id/editSurname"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="48dp"
         android:layout_marginTop="8dp"
         android:background="@drawable/input_gb"
-        android:drawableLeft="@drawable/baseline_contacts_24"
+        android:drawableStart="@drawable/baseline_contacts_24"
         android:ems="10"
         android:hint="@string/surname"
         android:inputType="text"
@@ -55,17 +56,18 @@
         app:layout_constraintEnd_toEndOf="@+id/editName"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/editName"
-        app:layout_constraintTop_toBottomOf="@+id/editName" />
+        app:layout_constraintTop_toBottomOf="@+id/editName"
+        android:autofillHints="personName" />
 
     <EditText
         android:id="@+id/editPassword"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="48dp"
         android:layout_marginTop="8dp"
         android:background="@drawable/input_gb"
-        android:drawableLeft="@drawable/password_icon"
+        android:drawableStart="@drawable/password_icon"
         android:ems="10"
-        android:hint="Password"
+        android:hint="@string/password"
         android:inputType="textPassword"
         android:paddingLeft="10dp"
         android:paddingTop="10dp"
@@ -73,15 +75,16 @@
         android:paddingBottom="10dp"
         app:layout_constraintEnd_toEndOf="@+id/editPhone"
         app:layout_constraintStart_toStartOf="@+id/editPhone"
-        app:layout_constraintTop_toBottomOf="@+id/editPhone" />
+        app:layout_constraintTop_toBottomOf="@+id/editPhone"
+        android:autofillHints="newPassword" />
 
     <EditText
         android:id="@+id/editPhone"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="48dp"
         android:layout_marginTop="8dp"
         android:background="@drawable/input_gb"
-        android:drawableLeft="@drawable/baseline_call_24"
+        android:drawableStart="@drawable/baseline_call_24"
         android:ems="10"
         android:hint="@string/phone"
         android:inputType="phone"
@@ -89,15 +92,16 @@
         app:layout_constraintEnd_toEndOf="@+id/editSurname"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/editSurname"
-        app:layout_constraintTop_toBottomOf="@+id/editSurname" />
+        app:layout_constraintTop_toBottomOf="@+id/editSurname"
+        android:autofillHints="phoneNumber" />
 
     <EditText
         android:id="@+id/editName"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="48dp"
         android:layout_marginTop="8dp"
         android:background="@drawable/input_gb"
-        android:drawableLeft="@drawable/baseline_contacts_24"
+        android:drawableStart="@drawable/baseline_contacts_24"
         android:ems="10"
         android:hint="@string/name"
         android:inputType="text"
@@ -108,15 +112,8 @@
         app:layout_constraintEnd_toEndOf="@+id/editUsername"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/editUsername"
-        app:layout_constraintTop_toBottomOf="@+id/editUsername" />
-
-    <LinearLayout
-        android:layout_width="409dp"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:textAlignment="center"
-        tools:layout_editor_absoluteX="1dp"
-        tools:layout_editor_absoluteY="1dp"/>
+        app:layout_constraintTop_toBottomOf="@+id/editUsername"
+        android:autofillHints="personFamilyName" />
 
     <Button
         android:id="@+id/accountSave"

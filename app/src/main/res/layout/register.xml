@@ -19,12 +19,12 @@
     <EditText
         android:id="@+id/inputUsernameRegister"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="48dp"
         android:layout_marginStart="32dp"
         android:layout_marginTop="75dp"
         android:layout_marginEnd="32dp"
         android:background="@drawable/input_gb"
-        android:drawableLeft="@drawable/username_icon"
+        android:drawableStart="@drawable/username_icon"
         android:ems="10"
         android:hint="@string/username"
         android:inputType="text"
@@ -34,15 +34,16 @@
         android:paddingBottom="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/registerText" />
+        app:layout_constraintTop_toBottomOf="@+id/registerText"
+        android:autofillHints="username" />
 
     <EditText
         android:id="@+id/inputName"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="48dp"
         android:layout_marginTop="8dp"
         android:background="@drawable/input_gb"
-        android:drawableLeft="@drawable/baseline_contacts_24"
+        android:drawableStart="@drawable/baseline_contacts_24"
         android:ems="10"
         android:hint="@string/name"
         android:inputType="text"
@@ -52,17 +53,18 @@
         android:paddingBottom="10dp"
         app:layout_constraintEnd_toEndOf="@+id/inputEmail"
         app:layout_constraintStart_toStartOf="@+id/inputEmail"
-        app:layout_constraintTop_toBottomOf="@+id/inputEmail" />
+        app:layout_constraintTop_toBottomOf="@+id/inputEmail"
+        android:autofillHints="name" />
 
     <EditText
         android:id="@+id/inputPasswordRegister"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="48dp"
         android:layout_marginTop="8dp"
         android:background="@drawable/input_gb"
-        android:drawableLeft="@drawable/password_icon"
+        android:drawableStart="@drawable/password_icon"
         android:ems="10"
-        android:hint="Password"
+        android:hint="@string/password"
         android:inputType="textPassword"
         android:paddingLeft="10dp"
         android:paddingTop="10dp"
@@ -70,17 +72,18 @@
         android:paddingBottom="10dp"
         app:layout_constraintEnd_toEndOf="@+id/inputSurname"
         app:layout_constraintStart_toStartOf="@+id/inputSurname"
-        app:layout_constraintTop_toBottomOf="@+id/inputSurname" />
+        app:layout_constraintTop_toBottomOf="@+id/inputSurname"
+        android:autofillHints="password" />
 
     <EditText
         android:id="@+id/inputEmail"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="48dp"
         android:layout_marginTop="8dp"
         android:background="@drawable/input_gb"
-        android:drawableLeft="@drawable/email_icon"
+        android:drawableStart="@drawable/email_icon"
         android:ems="10"
-        android:hint="Email"
+        android:hint="@string/email"
         android:inputType="textEmailAddress"
         android:paddingLeft="10dp"
         android:paddingTop="10dp"
@@ -88,15 +91,16 @@
         android:paddingBottom="10dp"
         app:layout_constraintEnd_toEndOf="@+id/inputUsernameRegister"
         app:layout_constraintStart_toStartOf="@+id/inputUsernameRegister"
-        app:layout_constraintTop_toBottomOf="@+id/inputUsernameRegister" />
+        app:layout_constraintTop_toBottomOf="@+id/inputUsernameRegister"
+        android:autofillHints="emailAddress" />
 
     <EditText
         android:id="@+id/inputSurname"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="48dp"
         android:layout_marginTop="8dp"
         android:background="@drawable/input_gb"
-        android:drawableLeft="@drawable/baseline_contacts_24"
+        android:drawableStart="@drawable/baseline_contacts_24"
         android:ems="10"
         android:hint="@string/surname"
         android:inputType="text"
@@ -106,7 +110,8 @@
         android:paddingBottom="10dp"
         app:layout_constraintEnd_toEndOf="@+id/inputName"
         app:layout_constraintStart_toStartOf="@+id/inputName"
-        app:layout_constraintTop_toBottomOf="@+id/inputName" />
+        app:layout_constraintTop_toBottomOf="@+id/inputName"
+        android:autofillHints="name" />
 
     <Button
         android:id="@+id/inviaRegister"
@@ -121,16 +126,17 @@
     <EditText
         android:id="@+id/inputPhone"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="48dp"
         android:layout_marginTop="12dp"
         android:background="@drawable/input_gb"
-        android:drawableLeft="@drawable/baseline_call_24"
+        android:drawableStart="@drawable/baseline_call_24"
         android:ems="10"
         android:hint="@string/phone"
         android:inputType="phone"
         android:padding="10dp"
         app:layout_constraintEnd_toEndOf="@+id/inputPasswordRegister"
         app:layout_constraintStart_toStartOf="@+id/inputPasswordRegister"
-        app:layout_constraintTop_toBottomOf="@+id/inputPasswordRegister" />
+        app:layout_constraintTop_toBottomOf="@+id/inputPasswordRegister"
+        android:autofillHints="phone" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

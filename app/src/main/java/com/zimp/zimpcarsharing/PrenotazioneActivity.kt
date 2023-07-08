@@ -122,6 +122,8 @@ class PrenotazioneActivity : AppCompatActivity() {
 
     }
 
+    //Per qualche motivo il recupero della posizione nell'emulatore ha funzionato solo la prima volta, poi ha smesso
+    // facendola partire dal telefono però funziona ancora
     private fun ordina(adapter: AutoAdapter){
 
         if (ordine==1){
@@ -136,8 +138,6 @@ class PrenotazioneActivity : AppCompatActivity() {
             for ((i, auto) in data.withIndex())
                 adapter.notifyItemChanged(i)
         }
-
-
     }
 
     private fun filtraPrezzo(query: String, adapter: AutoAdapter, data: ArrayList<Auto>){

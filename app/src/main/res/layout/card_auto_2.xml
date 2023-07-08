@@ -28,7 +28,8 @@
                 android:layout_width="70dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                tools:srcCompat="@tools:sample/avatars" />
+                tools:srcCompat="@tools:sample/avatars"
+                android:contentDescription="ImgAuto" />
 
             <TableLayout
                 android:id="@+id/tableLayout"
@@ -71,13 +72,6 @@
 
                 </TableRow>
 
-                <TableRow
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:textAlignment="center">
-
-                </TableRow>
-
             </TableLayout>
 
             <LinearLayout
@@ -96,7 +90,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Elimina" />
+                    android:text="@string/delete" />
 
                 <Space
                     android:layout_width="match_parent"

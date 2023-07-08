@@ -19,6 +19,14 @@
     <string name="rate">Tariffa</string>
     <string name="position">Posizione</string>
     <string name="confirm">Conferma</string>
+    <string name="password">Password</string>
+    <string name="myAuto">Le mie auto</string>
+    <string name="addAuto">Aggiungi Auto</string>
+    <string name="bookingTitle">Prenotazione</string>
+    <string name="delete">Elimina</string>
+    <string name="openMap">Apri Mappa</string>
+    <string name="book2">Prenota</string>
+    <string name="email">Email</string>
     <string-array name="rateOpts">
         <item>Prezzo: Crescente</item>
         <item>Prezzo: Decrescente</item>

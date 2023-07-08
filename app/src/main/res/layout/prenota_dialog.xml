@@ -27,9 +27,9 @@
             android:id="@+id/autoText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp"
             android:layout_weight="1"
-            android:text="TextView"
+            android:text=""
             android:textColor="#000000"
             android:textSize="20sp" />
     </LinearLayout>
@@ -57,11 +57,15 @@
         <EditText
             android:id="@+id/inputOre"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="48dp"
             android:layout_weight="1"
             android:backgroundTint="#FFFFFF"
             android:ems="10"
-            android:inputType="numberDecimal" />
+            android:hint="10"
+            android:inputType="numberDecimal"
+            android:textColor="#000000"
+            android:textColorHint="#232020"
+            android:importantForAutofill="no" />
     </LinearLayout>
 
     <LinearLayout
