@@ -18,7 +18,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
         val extras:Bundle? = intent.extras
         if (extras!= null){
             utente = extras.getSerializable("utente", Utente::class.java)
@@ -27,6 +26,11 @@ class MainActivity : AppCompatActivity() {
             utente = null
             startActivity(i)
         }
+        if (utente == null){
+            val i = Intent(this, LoginActivity::class.java)
+            startActivity(i)
+        }
+
 
         locationProviderClient = LocationServices.getFusedLocationProviderClient(this)
 
@@ -55,6 +59,11 @@ class MainActivity : AppCompatActivity() {
             startActivity(i)
         }
 
+    }
+
+    override fun onBackPressed() {
+        utente = null
+        super.onBackPressed()
     }
 
 

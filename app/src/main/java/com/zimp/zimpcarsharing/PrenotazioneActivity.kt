@@ -175,24 +175,28 @@ class PrenotazioneActivity : AppCompatActivity() {
         val prenota = dialog.findViewById<Button>(R.id.confermaPrenotBtn)
 
         prenota.setOnClickListener {
-            val query = "UPDATE zimp_db.auto SET idutente = ${utente?.idUtente}, prenotata = 1, orePrenotata=${ore.text.toString().toInt()} WHERE idauto = ${auto.idAuto}"
-            Log.i("QUERY", query)
-            Log.i("UTENTE", "$utente")
-            ClientNetwork.retrofit.insert(query).enqueue(
-                object : Callback<JsonObject>{
-                    override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
-                        Log.i("PRENOTAZIONE", "${response}")
-                        if (response.isSuccessful){
-                            Toast.makeText(context, "Auto prenotata", Toast.LENGTH_LONG).show()
-                            dialog.dismiss()
-                        }else
-                            Toast.makeText(context, "Ops qualcosa è andato storto", Toast.LENGTH_LONG).show()
+            if (ore.text.toString() == ""){
+                Toast.makeText(context, "Inserisci le ore", Toast.LENGTH_SHORT).show()
+            }else{
+                val query = "UPDATE zimp_db.auto SET idutente = ${utente?.idUtente}, prenotata = 1, orePrenotata=${ore.text.toString().toInt()} WHERE idauto = ${auto.idAuto}"
+                Log.i("QUERY", query)
+                Log.i("UTENTE", "$utente")
+                ClientNetwork.retrofit.insert(query).enqueue(
+                    object : Callback<JsonObject>{
+                        override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
+                            Log.i("PRENOTAZIONE", "${response}")
+                            if (response.isSuccessful){
+                                Toast.makeText(context, "Auto prenotata", Toast.LENGTH_LONG).show()
+                                dialog.dismiss()
+                            }else
+                                Toast.makeText(context, "Ops qualcosa è andato storto", Toast.LENGTH_LONG).show()
+                        }
+                        override fun onFailure(call: Call<JsonObject>, t: Throwable) {
+                            Toast.makeText(context, "Niente connessione al server", Toast.LENGTH_LONG).show()
+                        }
                     }
-                    override fun onFailure(call: Call<JsonObject>, t: Throwable) {
-                        Toast.makeText(context, "Niente connessione al server", Toast.LENGTH_LONG).show()
-                    }
-                }
-            )
+                )
+            }
         }
         dialog.show()
     }

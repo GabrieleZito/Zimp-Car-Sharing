@@ -20,8 +20,6 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationCallback
-import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
 import com.google.gson.Gson
 import com.google.gson.JsonArray
@@ -180,9 +178,6 @@ class MieAutoActivity : AppCompatActivity() {
         }
     }
 
-
-
-
     fun aggiungi(marca: String, modello:String, tariffa:Int){
 
         val query = "INSERT INTO zimp_db.auto (marca, modello, latitudine, longitudine, prenotata, tariffa, idproprietario, orePrenotata)" +
@@ -247,7 +242,6 @@ class MieAutoActivity : AppCompatActivity() {
                 }
             )
         }
-        
     }
 
 

@@ -17,6 +17,7 @@ import retrofit2.Response
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var binding: LoginBinding
+
     var gson : Gson = Gson()
     lateinit var u:Utente
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,6 +61,7 @@ class LoginActivity : AppCompatActivity() {
                                 Toast.LENGTH_LONG
                             ).show()
                             u = gson.fromJson((response.body()?.get("queryset") as JsonArray).get(0), Utente::class.java)
+
                             Log.i("UTENTE", ""+u )
                             val p = Intent(this@LoginActivity, MainActivity::class.java)
                             p.putExtra("utente", u)
